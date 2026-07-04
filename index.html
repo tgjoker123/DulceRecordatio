@@ -1,11 +1,9 @@
-
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DulceRecordatio - Papelaria Afetiva & Escolar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Recordatio - Papelaria Afetiva & Escolar</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -23,11 +21,11 @@
             --danger: #ef4444;
             --whats: #25D366;
             --insta: #E1306C;
-            --shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
+            --shadow: 0 8px 24px rgba(149, 157, 165, 0.08);
             --transition: all 0.3s ease;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { 
             display: flex;
@@ -46,7 +44,7 @@
             color: white;
             text-align: center;
             padding: 10px 20px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             letter-spacing: 0.5px;
             position: sticky;
@@ -57,182 +55,175 @@
         header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
-            padding: 15px 8%;
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
+            -webkit-backdrop-filter: blur(12px);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow);
             position: sticky;
-            top: 0;
+            top: 38px;
             z-index: 1000;
             border-bottom: 1px solid #edf2f7;
         }
 
-        .header-left { display: flex; justify-content: flex-start; }
-        .header-right { display: flex; justify-content: flex-end; gap: 12px; align-items: center; }
+        .header-right { display: flex; gap: 8px; align-items: center; }
 
-        .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; grid-column: 2; }
-        .logo-icons { display: flex; align-items: center; position: relative; color: var(--accent); font-size: 1.4rem; }
-        .logo-icons .fa-heart { font-size: 0.7rem; position: absolute; top: -6px; right: -4px; }
-        .logo h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary); font-weight: 600; letter-spacing: 0.5px; }
+        .logo { display: flex; align-items: center; gap: 6px; cursor: pointer; text-decoration: none; }
+        .logo-icons { display: flex; align-items: center; position: relative; color: var(--accent); font-size: 1.2rem; }
+        .logo-icons .fa-heart { font-size: 0.6rem; position: absolute; top: -5px; right: -4px; }
+        .logo h1 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary); font-weight: 600; letter-spacing: 0.5px; }
 
         .btn {
-            padding: 10px 18px;
+            padding: 10px 14px;
             border-radius: 10px;
             border: none;
             cursor: pointer;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             transition: var(--transition);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         
         .btn-cart { background: var(--accent-light); color: var(--accent); position: relative; }
         .cart-badge {
             position: absolute; top: -5px; right: -5px;
             background: var(--accent); color: white;
-            font-size: 0.75rem; padding: 2px 7px; border-radius: 50%;
+            font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: 700;
         }
         .btn-admin { background: #edf2f7; color: var(--muted); }
         .btn-login { background: transparent; color: var(--primary); border: 1px solid #e2e8f0; }
-        .btn-green { background: var(--accent); color: white; width: 100%; justify-content: center; border-radius: 10px; }
-        .btn-green:hover { opacity: 0.9; }
+        .btn-green { background: var(--accent); color: white; width: 100%; justify-content: center; border-radius: 12px; padding: 14px; }
 
         .search-box {
             background: var(--bg-card);
             display: flex;
             align-items: center;
-            padding: 4px 18px;
-            border-radius: 12px;
+            padding: 2px 14px;
+            border-radius: 14px;
             border: 1px solid #e2e8f0;
-            margin: 30px auto 20px;
-            max-width: 800px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 600px;
             color: var(--muted);
             box-shadow: var(--shadow);
         }
         .search-box input {
-            background: transparent; border: none; outline: none; padding: 12px; width: 100%; color: var(--primary); font-size: 1rem;
+            background: transparent; border: none; outline: none; padding: 10px; width: 100%; color: var(--primary); font-size: 0.95rem;
         }
 
         .cat-container {
-            display: flex; gap: 10px; overflow-x: auto; padding: 10px 8%; margin-bottom: 30px; justify-content: center;
+            display: flex; gap: 8px; overflow-x: auto; padding: 5px 5% 15px; margin-bottom: 15px;
+            scrollbar-width: none; -webkit-overflow-scrolling: touch;
         }
+        .cat-container::-webkit-scrollbar { display: none; }
+        
         .cat-card {
-            background: var(--bg-card); padding: 8px 20px; border-radius: 8px;
-            cursor: pointer; white-space: nowrap; font-size: 0.9rem; font-weight: 500;
+            background: var(--bg-card); padding: 8px 16px; border-radius: 20px;
+            cursor: pointer; white-space: nowrap; font-size: 0.85rem; font-weight: 500;
             border: 1px solid #e2e8f0; transition: var(--transition); color: var(--muted);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
         .cat-card.active, .cat-card:hover { background: var(--accent); color: white; border-color: var(--accent); }
 
-        .page { display: none; padding: 0 8% 80px; animation: fadeIn 0.4s ease; }
+        .page { display: none; padding: 0 5% 60px; animation: fadeIn 0.3s ease; }
         .active-page { display: block; }
 
         .products-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px; max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px; max-width: 1200px; margin: 0 auto;
         }
 
         .product-card {
-            background: var(--bg-card); border-radius: 14px; padding: 16px;
-            display: flex; align-items: center; gap: 16px; text-align: left;
-            position: relative; border: 1px solid #edf2f7; transition: var(--transition);
-            box-shadow: var(--shadow);
+            background: var(--bg-card); border-radius: 16px; padding: 12px;
+            display: flex; align-items: center; gap: 14px; text-align: left;
+            position: relative; border: 1px solid #edf2f7; box-shadow: var(--shadow);
         }
-        .product-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(149, 157, 165, 0.2); }
-        .product-card img { width: 90px; height: 90px; object-fit: cover; border-radius: 12px; }
+        .product-card img { width: 85px; height: 85px; object-fit: cover; border-radius: 12px; background: #eee; }
         
-        .product-details { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-        .product-details h3 { font-size: 1.05rem; font-weight: 600; color: var(--primary); }
-        .product-details p { font-size: 0.85rem; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .product-price { font-size: 1.1rem; font-weight: 700; color: var(--accent); margin-top: 4px; }
+        .product-details { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .product-details h3 { font-size: 0.95rem; font-weight: 600; color: var(--primary); line-height: 1.3; }
+        .product-details p { font-size: 0.8rem; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-price { font-size: 1rem; font-weight: 700; color: var(--accent); margin-top: 4px; }
 
         .add-to-cart-btn {
             background: var(--accent-light); border: none; color: var(--accent);
-            width: 36px; height: 36px; border-radius: 8px; display: flex;
+            width: 36px; height: 36px; border-radius: 10px; display: flex;
             align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);
         }
-        .add-to-cart-btn:hover { background: var(--accent); color: white; }
 
-        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1999; display: none; backdrop-filter: blur(4px); }
+        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1999; display: none; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
         .cart-sidebar {
-            position: fixed; right: -420px; top: 0; width: 380px; height: 100%;
-            background: var(--bg-card); z-index: 2000; padding: 30px 24px;
-            transition: 0.4s; display: flex; flex-direction: column; border-left: 1px solid #edf2f7;
+            position: fixed; right: -420px; top: 0; width: 100%; max-width: 380px; height: 100%;
+            background: var(--bg-card); z-index: 2000; padding: 24px;
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; border-left: 1px solid #edf2f7;
             box-shadow: var(--shadow);
         }
         .cart-sidebar.open { right: 0; }
 
-        /* Estilos do Toast Notification */
         .toast-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--primary);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 3000;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 100px);
+            background: var(--primary); color: white; padding: 12px 20px; border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px;
+            z-index: 3000; font-weight: 500; font-size: 0.85rem; width: 90%; max-width: 340px;
+            opacity: 0; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
             border-left: 4px solid var(--secondary);
         }
-        .toast-notification.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
+        .toast-notification.show { transform: translate(-50%, 0); opacity: 1; }
 
-        .admin-container { max-width: 900px; margin: 40px auto; background: var(--bg-card); padding: 32px; border-radius: 14px; border: 1px solid #edf2f7; box-shadow: var(--shadow); }
-        .input-field { padding: 12px; border-radius: 8px; background: var(--bg-light); border: 1px solid #e2e8f0; color: var(--primary); width: 100%; outline: none; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .admin-container { max-width: 900px; margin: 20px auto; background: var(--bg-card); padding: 20px; border-radius: 14px; border: 1px solid #edf2f7; box-shadow: var(--shadow); }
+        .input-field { padding: 12px; border-radius: 8px; background: var(--bg-light); border: 1px solid #e2e8f0; color: var(--primary); width: 100%; outline: none; font-size: 0.95rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
 
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; }
-        .admin-table th, .admin-table td { padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 0.9rem; }
+        .admin-table th, .admin-table td { padding: 10px; border-bottom: 1px solid #edf2f7; font-size: 0.85rem; }
         .admin-table th { background: var(--bg-light); color: var(--primary); font-weight: 600; }
-        .action-icon { cursor: pointer; margin-right: 10px; font-size: 1rem; transition: var(--transition); border: none; background: none; }
+        .action-icon { cursor: pointer; margin-right: 8px; font-size: 0.95rem; border: none; background: none; }
         .action-icon.edit { color: #3498db; }
         .action-icon.delete { color: var(--danger); }
 
-        footer {
-            background: var(--bg-card); color: var(--primary); padding: 40px 8% 30px;
-            border-top: 1px solid #edf2f7; text-align: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
-        }
-        .footer-content { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; align-items: center; }
-        .footer-about { font-size: 1.05rem; font-weight: 400; color: var(--muted); max-width: 600px; line-height: 1.6; }
+        footer { background: var(--bg-card); color: var(--primary); padding: 30px 5%; border-top: 1px solid #edf2f7; text-align: center; }
+        .footer-content { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        .footer-about { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
         
-        .footer-socials { display: flex; gap: 15px; margin: 10px 0; }
+        .footer-socials { display: flex; gap: 10px; width: 100%; justify-content: center; }
         .btn-social {
-            padding: 12px 24px; border-radius: 30px; color: white; font-weight: 600; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 10px; transition: var(--transition); box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 12px 20px; border-radius: 12px; color: white; font-weight: 600; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px; transition: var(--transition); font-size: 0.9rem; width: auto;
         }
         .btn-social.whatsapp { background: var(--whats); }
         .btn-social.instagram { background: var(--insta); }
-        .btn-social:hover { transform: translateY(-2px); filter: brightness(0.95); }
 
-        .footer-email { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+        .footer-email { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 0.9rem; }
 
+        /* --- OTIMIZAÇÃO CRÍTICA PARA CELULAR (Safar/Chrome Mobile) --- */
         @media (max-width: 768px) {
-            header { grid-template-columns: 1fr auto; }
-            .header-left { display: none; }
-            .logo { grid-column: 1; }
-            .header-right { grid-column: 2; }
-            .form-row { grid-template-columns: 1fr; }
-            .cart-sidebar { width: 100%; }
-            .products-grid { grid-template-columns: 1fr; }
-            .footer-socials { flex-direction: column; width: 100%; max-width: 280px; }
-            .btn-social { justify-content: center; }
+            header { padding: 10px 4%; }
+            .logo h1 { font-size: 1.3rem; }
+            
+            /* Ajuste para caber 2 produtos lado a lado perfeitamente no mobile */
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .product-card { flex-direction: column; align-items: flex-start; padding: 10px; gap: 10px; }
+            .product-card img { width: 100%; height: 130px; border-radius: 10px; }
+            .product-details h3 { font-size: 0.85rem; height: 34px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+            .product-details p { display: none; } /* Oculta descrição longa no mobile para limpar visual */
+            .product-price { font-size: 0.95rem; margin-top: 2px; }
+            
+            .add-to-cart-btn { position: absolute; bottom: 10px; right: 10px; width: 32px; height: 32px; }
+            
+            .form-row { grid-template-columns: 1fr; gap: 8px; }
+            .cat-container { justify-content: flex-start; }
+            .footer-socials { flex-direction: column; align-items: center; }
+            .btn-social { width: 100%; max-width: 280px; justify-content: center; }
+            
+            /* Tabela admin rolável no mobile para não quebrar tela */
+            .admin-container { overflow-x: auto; padding: 15px; }
+            .admin-table { width: 600px; }
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -242,14 +233,13 @@
 </div>
 
 <div id="toast" class="toast-notification">
-    <i class="fa-solid fa-circle-check" style="color: var(--secondary); font-size: 1.2rem;"></i>
+    <i class="fa-solid fa-circle-check" style="color: var(--secondary); font-size: 1.1rem;"></i>
     <span>Item adicionado ao carrinho de compras!</span>
 </div>
 
 <header>
-    <div class="header-left"></div>
     <a href="#" class="logo" onclick="showPage('page-loja')">
-        <h1>DulceRecordatio</h1>
+        <h1>Recordatio</h1>
         <div class="logo-icons">
             <i class="fa-solid fa-camera"></i>
             <i class="fa-solid fa-heart"></i>
@@ -287,18 +277,18 @@
 
     <section id="page-admin" class="page">
         <div class="admin-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <h2>Painel Administrativo (Supabase Cloud)</h2>
-                <div>
-                    <button type="button" class="btn" style="background:#ef4444; color:white; margin-right:10px;" onclick="handleLogout()">Sair do Painel</button>
-                    <button type="button" class="btn" style="background:#7f8c8d; color:white" onclick="showPage('page-loja')">Voltar à Loja</button>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                <h2>Painel Administrativo</h2>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" class="btn" style="background:#ef4444; color:white; flex:1;" onclick="handleLogout()">Sair</button>
+                    <button type="button" class="btn" style="background:#7f8c8d; color:white; flex:1;" onclick="showPage('page-loja')">Loja</button>
                 </div>
             </div>
 
-            <h3 style="margin-bottom:15px; border-bottom:2px solid var(--accent); display:inline-block; padding-bottom:3px;">Gerenciar Produtos</h3>
-            <div style="background: var(--bg-light); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+            <h3 style="margin-bottom:10px; border-bottom:2px solid var(--accent); display:inline-block; padding-bottom:3px; font-size:1.1rem;">Produtos</h3>
+            <div style="background: var(--bg-light); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
                 <input type="hidden" id="form-id">
-                <input type="text" id="form-nome" class="input-field" placeholder="Nome do Produto" style="margin-bottom:15px;">
+                <input type="text" id="form-nome" class="input-field" placeholder="Nome do Produto" style="margin-bottom:10px;">
                 <div class="form-row">
                     <select id="form-cat" class="input-field">
                         <option value="encadernacao">Agendas & Cadernetas</option>
@@ -307,8 +297,8 @@
                     <input type="number" step="0.01" id="form-preco" class="input-field" placeholder="Preço R$">
                     <input type="number" id="form-estoque" class="input-field" placeholder="Estoque">
                 </div>
-                <input type="text" id="form-desc" class="input-field" placeholder="Descrição Curta" style="margin-bottom:15px;">
-                <input type="text" id="form-img" class="input-field" placeholder="URL da Imagem" style="margin-bottom:15px;">
+                <input type="text" id="form-desc" class="input-field" placeholder="Descrição Curta" style="margin-bottom:10px;">
+                <input type="text" id="form-img" class="input-field" placeholder="URL da Imagem" style="margin-bottom:10px;">
                 <button type="button" class="btn btn-green" onclick="saveProduct()">Salvar Produto</button>
             </div>
 
@@ -326,11 +316,11 @@
 
             <br><br>
 
-            <h3 style="margin-bottom:15px; border-bottom:2px solid var(--accent); display:inline-block; padding-bottom:3px;">Gerenciar Cupons</h3>
-            <div style="background: var(--bg-light); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+            <h3 style="margin-bottom:10px; border-bottom:2px solid var(--accent); display:inline-block; padding-bottom:3px; font-size:1.1rem;">Cupons</h3>
+            <div style="background: var(--bg-light); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
                 <input type="hidden" id="coupon-id">
                 <div class="form-row">
-                    <input type="text" id="coupon-code" class="input-field" placeholder="Código do Cupom (ex: VOLTAASAULAS)">
+                    <input type="text" id="coupon-code" class="input-field" placeholder="Código do Cupom">
                     <input type="number" id="coupon-discount" class="input-field" placeholder="Desconto (%)">
                     <button type="button" class="btn btn-green" onclick="saveCoupon()">Salvar Cupom</button>
                 </div>
@@ -361,32 +351,32 @@
 
 <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
 <aside class="cart-sidebar" id="cart-sidebar">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
         <h2>Sua Sacola</h2>
         <button type="button" onclick="toggleCart()" style="background:none; border:none; color:var(--primary); font-size:1.5rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div id="cart-items-list" style="flex-grow:1; overflow-y:auto"></div>
     
     <div style="border-top: 1px solid #edf2f7; padding: 15px 0;">
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="cart-coupon-input" class="input-field" placeholder="Cupom de Desconto" style="padding:8px;">
-            <button type="button" class="btn" style="background:var(--primary); color:white; padding:0 15px;" onclick="applyCoupon()">Aplicar</button>
+        <div style="display:flex; gap:8px;">
+            <input type="text" id="cart-coupon-input" class="input-field" placeholder="Cupom" style="padding:8px;">
+            <button type="button" class="btn" style="background:var(--primary); color:white; padding:0 12px;" onclick="applyCoupon()">Aplicar</button>
         </div>
-        <div id="coupon-message" style="font-size:0.8rem; margin-top:5px;"></div>
+        <div id="coupon-message" style="font-size:0.75rem; margin-top:5px;"></div>
     </div>
 
     <div style="border-top: 1px solid #edf2f7; padding-top: 15px;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:5px">
-            <span style="color:var(--muted)">Subtotal:</span>
-            <span id="cart-subtotal">R$ 0,00</span>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px">
+            <span style="color:var(--muted); font-size:0.9rem;">Subtotal:</span>
+            <span id="cart-subtotal" style="font-size:0.9rem;">R$ 0,00</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px">
+            <span style="color:var(--muted); font-size:0.9rem;">Desconto:</span>
+            <span id="cart-discount" style="color:var(--danger); font-size:0.9rem;">- R$ 0,00</span>
         </div>
         <div style="display:flex; justify-content:space-between; margin-bottom:15px">
-            <span style="color:var(--muted)">Desconto:</span>
-            <span id="cart-discount" style="color:var(--danger)">- R$ 0,00</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px">
-            <span style="font-weight:600;">Total estimado:</span>
-            <span id="cart-total" style="font-size:1.4rem; font-weight:700; color:var(--accent);">R$ 0,00</span>
+            <span style="font-weight:600;">Total:</span>
+            <span id="cart-total" style="font-size:1.3rem; font-weight:700; color:var(--accent);">R$ 0,00</span>
         </div>
         <button type="button" class="btn btn-green" style="background: var(--whats);" onclick="checkout()">
             <i class="fa-brands fa-whatsapp"></i> Enviar via WhatsApp
@@ -397,18 +387,17 @@
 <footer>
     <div class="footer-content">
         <p class="footer-about">
-            Espalhando muito amor através de nossos produtos! Trabalhamos com Agendas (escolares e agendamentos), planners, cadernetas de vacina, calendários e muito mais!!!
+            Espalhando muito amor através de nossos produtos! Trabalhamos com Agendas, planners, cadernetas de vacina, calendários e muito mais!!!
         </p>
         
         <div class="footer-socials">
             <a href="https://wa.me/5524993346056" target="_blank" class="btn-social whatsapp">
-                <i class="fa-brands fa-whatsapp"></i> Conversar no Zap
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp
             </a>
             <a href="https://www.instagram.com/dulcerecordation" target="_blank" class="btn-social instagram">
-                <i class="fa-brands fa-instagram"></i> Siga no Instagram
+                <i class="fa-brands fa-instagram"></i> Instagram
             </a>
         </div>
-
         <a href="mailto:dulcerecordatio@gmail.com" class="footer-email">dulcerecordatio@gmail.com</a>
     </div>
 </footer>
@@ -457,6 +446,7 @@ function showPage(id) {
     }
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
     document.getElementById(id).classList.add('active-page');
+    window.scrollTo(0,0);
 }
 
 function filterCat(cat, el) {
@@ -501,11 +491,7 @@ function toggleCart() {
 function showToastNotification() {
     const toast = document.getElementById('toast');
     toast.classList.add('show');
-    
-    // Remove a notificação após 3 segundos
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
+    setTimeout(() => { toast.classList.remove('show'); }, 2500);
 }
 
 function addToCart(id) {
@@ -514,8 +500,6 @@ function addToCart(id) {
     if(inCart) inCart.qty++;
     else cart.push({...item, qty: 1});
     updateCart();
-    
-    // Dispara o alerta customizado na tela
     showToastNotification();
 }
 
@@ -528,12 +512,12 @@ function updateCart() {
         subtotal += item.preco * item.qty;
         count += item.qty;
         list.innerHTML += `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:var(--bg-light); padding:10px; border-radius:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:var(--bg-light); padding:10px; border-radius:8px;">
                 <div>
-                    <b>${item.nome}</b><br>
+                    <span style="font-size:0.9rem; font-weight:600">${item.nome}</span><br>
                     <small style="color:var(--muted)">${item.qty}x R$ ${parseFloat(item.preco).toFixed(2)}</small>
                 </div>
-                <button onclick="removeFromCart(${item.id})" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                <button onclick="removeFromCart(${item.id})" style="background:none; border:none; color:var(--danger); cursor:pointer; padding:5px;"><i class="fa-solid fa-trash"></i></button>
             </div>
         `;
     });
@@ -560,7 +544,7 @@ function applyCoupon() {
     if(found) {
         activeCoupon = found;
         msgEl.style.color = "var(--secondary)";
-        msgEl.innerText = `Cupom ${found.code} (${found.discount}%) applied!`;
+        msgEl.innerText = `Cupom ${found.code} (${found.discount}%) aplicado!`;
     } else {
         activeCoupon = null;
         msgEl.style.color = "var(--danger)";
