@@ -1,0 +1,749 @@
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DulceRecordatio - Papelaria Afetiva & Escolar</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-light: #f7f9fc;
+            --bg-card: #ffffff;
+            --primary: #2c3e50; 
+            --secondary: #4ade80; 
+            --accent: #ff6b81; 
+            --accent-light: #ffeef1;
+            --muted: #7f8c8d;
+            --white: #ffffff;
+            --danger: #ef4444;
+            --whats: #25D366;
+            --insta: #E1306C;
+            --shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--bg-light); 
+            color: var(--primary); 
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .content { flex: 1; }
+
+        .promo-bar {
+            background: linear-gradient(90deg, #ff6b81, #ff9ff3);
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 1001;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 15px 8%;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .header-left { display: flex; justify-content: flex-start; }
+        .header-right { display: flex; justify-content: flex-end; gap: 12px; align-items: center; }
+
+        .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; grid-column: 2; }
+        .logo-icons { display: flex; align-items: center; position: relative; color: var(--accent); font-size: 1.4rem; }
+        .logo-icons .fa-heart { font-size: 0.7rem; position: absolute; top: -6px; right: -4px; }
+        .logo h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary); font-weight: 600; letter-spacing: 0.5px; }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+        
+        .btn-cart { background: var(--accent-light); color: var(--accent); position: relative; }
+        .cart-badge {
+            position: absolute; top: -5px; right: -5px;
+            background: var(--accent); color: white;
+            font-size: 0.75rem; padding: 2px 7px; border-radius: 50%;
+        }
+        .btn-admin { background: #edf2f7; color: var(--muted); }
+        .btn-login { background: transparent; color: var(--primary); border: 1px solid #e2e8f0; }
+        .btn-green { background: var(--accent); color: white; width: 100%; justify-content: center; border-radius: 10px; }
+        .btn-green:hover { opacity: 0.9; }
+
+        .search-box {
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            padding: 4px 18px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin: 30px auto 20px;
+            max-width: 800px;
+            color: var(--muted);
+            box-shadow: var(--shadow);
+        }
+        .search-box input {
+            background: transparent; border: none; outline: none; padding: 12px; width: 100%; color: var(--primary); font-size: 1rem;
+        }
+
+        .cat-container {
+            display: flex; gap: 10px; overflow-x: auto; padding: 10px 8%; margin-bottom: 30px; justify-content: center;
+        }
+        .cat-card {
+            background: var(--bg-card); padding: 8px 20px; border-radius: 8px;
+            cursor: pointer; white-space: nowrap; font-size: 0.9rem; font-weight: 500;
+            border: 1px solid #e2e8f0; transition: var(--transition); color: var(--muted);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .cat-card.active, .cat-card:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .page { display: none; padding: 0 8% 80px; animation: fadeIn 0.4s ease; }
+        .active-page { display: block; }
+
+        .products-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px; max-width: 1200px; margin: 0 auto;
+        }
+
+        .product-card {
+            background: var(--bg-card); border-radius: 14px; padding: 16px;
+            display: flex; align-items: center; gap: 16px; text-align: left;
+            position: relative; border: 1px solid #edf2f7; transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        .product-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(149, 157, 165, 0.2); }
+        .product-card img { width: 90px; height: 90px; object-fit: cover; border-radius: 12px; }
+        
+        .product-details { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .product-details h3 { font-size: 1.05rem; font-weight: 600; color: var(--primary); }
+        .product-details p { font-size: 0.85rem; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-price { font-size: 1.1rem; font-weight: 700; color: var(--accent); margin-top: 4px; }
+
+        .add-to-cart-btn {
+            background: var(--accent-light); border: none; color: var(--accent);
+            width: 36px; height: 36px; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);
+        }
+        .add-to-cart-btn:hover { background: var(--accent); color: white; }
+
+        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1999; display: none; backdrop-filter: blur(4px); }
+        .cart-sidebar {
+            position: fixed; right: -420px; top: 0; width: 380px; height: 100%;
+            background: var(--bg-card); z-index: 2000; padding: 30px 24px;
+            transition: 0.4s; display: flex; flex-direction: column; border-left: 1px solid #edf2f7;
+            box-shadow: var(--shadow);
+        }
+        .cart-sidebar.open { right: 0; }
+
+        /* Estilos do Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            border-left: 4px solid var(--secondary);
+        }
+        .toast-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .admin-container { max-width: 900px; margin: 40px auto; background: var(--bg-card); padding: 32px; border-radius: 14px; border: 1px solid #edf2f7; box-shadow: var(--shadow); }
+        .input-field { padding: 12px; border-radius: 8px; background: var(--bg-light); border: 1px solid #e2e8f0; color: var(--primary); width: 100%; outline: none; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; }
+        .admin-table th, .admin-table td { padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 0.9rem; }
+        .admin-table th { background: var(--bg-light); color: var(--primary); font-weight: 600; }
+        .action-icon { cursor: pointer; margin-right: 10px; font-size: 1rem; transition: var(--transition); border: none; background: none; }
+        .action-icon.edit { color: #3498db; }
+        .action-icon.delete { color: var(--danger); }
+
+        footer {
+            background: var(--bg-card); color: var(--primary); padding: 40px 8% 30px;
+            border-top: 1px solid #edf2f7; text-align: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
+        }
+        .footer-content { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .footer-about { font-size: 1.05rem; font-weight: 400; color: var(--muted); max-width: 600px; line-height: 1.6; }
+        
+        .footer-socials { display: flex; gap: 15px; margin: 10px 0; }
+        .btn-social {
+            padding: 12px 24px; border-radius: 30px; color: white; font-weight: 600; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 10px; transition: var(--transition); box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .btn-social.whatsapp { background: var(--whats); }
+        .btn-social.instagram { background: var(--insta); }
+        .btn-social:hover { transform: translateY(-2px); filter: brightness(0.95); }
+
+        .footer-email { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+
+        @media (max-width: 768px) {
+            header { grid-template-columns: 1fr auto; }
+            .header-left { display: none; }
+            .logo { grid-column: 1; }
+            .header-right { grid-column: 2; }
+            .form-row { grid-template-columns: 1fr; }
+            .cart-sidebar { width: 100%; }
+            .products-grid { grid-template-columns: 1fr; }
+            .footer-socials { flex-direction: column; width: 100%; max-width: 280px; }
+            .btn-social { justify-content: center; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="promo-bar">
+    ✨ Espalhando muito amor através de nossos produtos! ✨
+</div>
+
+<div id="toast" class="toast-notification">
+    <i class="fa-solid fa-circle-check" style="color: var(--secondary); font-size: 1.2rem;"></i>
+    <span>Item adicionado ao carrinho de compras!</span>
+</div>
+
+<header>
+    <div class="header-left"></div>
+    <a href="#" class="logo" onclick="showPage('page-loja')">
+        <h1>DulceRecordatio</h1>
+        <div class="logo-icons">
+            <i class="fa-solid fa-camera"></i>
+            <i class="fa-solid fa-heart"></i>
+        </div>
+    </a>
+    <div class="header-right">
+        <button type="button" class="btn btn-cart" onclick="toggleCart()">
+            <i class="fa-solid fa-basket-shopping"></i>
+            <span id="cart-badge" class="cart-badge">0</span>
+        </button>
+        <button type="button" id="nav-admin" class="btn btn-admin" style="display:none" onclick="showPage('page-admin')">
+            <i class="fa-solid fa-gear"></i>
+        </button>
+        <button type="button" id="nav-login" class="btn btn-login" onclick="showPage('page-auth')">
+            <i class="fa-solid fa-user"></i>
+        </button>
+    </div>
+</header>
+
+<main class="content">
+    <section id="page-loja" class="page active-page">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="shop-search" placeholder="Procurar lembrança especial..." onkeyup="renderShop()">
+        </div>
+
+        <div class="cat-container">
+            <div class="cat-card active" onclick="filterCat('todos', this)">Todos os produtos</div>
+            <div class="cat-card" onclick="filterCat('encadernacao', this)">Agendas & Cadernetas</div>
+            <div class="cat-card" onclick="filterCat('decoracao', this)">Quadros & Fotografias</div>
+        </div>
+
+        <div id="shop-container" class="products-grid"></div>
+    </section>
+
+    <section id="page-admin" class="page">
+        <div class="admin-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2>Painel Administrativo (Supabase Cloud)</h2>
+                <div>
+                    <button type="button" class="btn" style="background:#ef4444; color:white; margin-right:10px;" onclick="handleLogout()">Sair do Painel</button>
+                    <button type="button" class="btn" style="background:#7f8c8d; color:white" onclick="showPage('page-loja')">Voltar à Loja</button>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom:15px; border-bottom:2px solid var(--accent); display:inline-block; padding-bottom:3px;">Gerenciar Produtos</h3>
+            <div style="background: var(--bg-light); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <input type="hidden" id="form-id">
+                <input type="text" id="form-nome" class="input-field" placeholder="Nome do Produto" style="margin-bottom:15px;">
+                <div class="form-row">
+                    <select id="form-cat" class="input-field">
+                        <option value="encadernacao">Agendas & Cadernetas</option>
+                        <option value="decoracao">Quadros & Fotografias</option>
+                    </select>
+                    <input type="number" step="0.01" id="form-preco" class="input-field" placeholder="Preço R$">
+                    <input type="number" id="form-estoque" class="input-field" placeholder="Estoque">
+                </div>
+                <input type="text" id="form-desc" class="input-field" placeholder="Descrição Curta" style="margin-bottom:15px;">
+                <input type="text" id="form-img" class="input-field" placeholder="URL da Imagem" style="margin-bottom:15px;">
+                <button type="button" class="btn btn-green" onclick="saveProduct()">Salvar Produto</button>
+            </div>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Categoria</th>
+                        <th>Preço</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-products-list"></tbody>
+            </table>
+
+            <br><br>
+
+            <h3 style="margin-bottom:15px; border-bottom:2px solid var(--accent); display:inline-block; padding-bottom:3px;">Gerenciar Cupons</h3>
+            <div style="background: var(--bg-light); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <input type="hidden" id="coupon-id">
+                <div class="form-row">
+                    <input type="text" id="coupon-code" class="input-field" placeholder="Código do Cupom (ex: VOLTAASAULAS)">
+                    <input type="number" id="coupon-discount" class="input-field" placeholder="Desconto (%)">
+                    <button type="button" class="btn btn-green" onclick="saveCoupon()">Salvar Cupom</button>
+                </div>
+            </div>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Desconto (%)</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-coupons-list"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="page-auth" class="page">
+        <div class="admin-container" style="max-width: 400px; text-align: center;">
+            <h2>Acesso Restrito</h2>
+            <input type="text" id="login-user" class="input-field" placeholder="Usuário" style="margin: 20px 0 10px;">
+            <input type="password" id="login-pass" class="input-field" placeholder="Senha" style="margin-bottom: 20px;">
+            <button type="button" class="btn btn-green" onclick="handleLogin()">Entrar</button>
+        </div>
+    </section>
+</main>
+
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<aside class="cart-sidebar" id="cart-sidebar">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px">
+        <h2>Sua Sacola</h2>
+        <button type="button" onclick="toggleCart()" style="background:none; border:none; color:var(--primary); font-size:1.5rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="cart-items-list" style="flex-grow:1; overflow-y:auto"></div>
+    
+    <div style="border-top: 1px solid #edf2f7; padding: 15px 0;">
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="cart-coupon-input" class="input-field" placeholder="Cupom de Desconto" style="padding:8px;">
+            <button type="button" class="btn" style="background:var(--primary); color:white; padding:0 15px;" onclick="applyCoupon()">Aplicar</button>
+        </div>
+        <div id="coupon-message" style="font-size:0.8rem; margin-top:5px;"></div>
+    </div>
+
+    <div style="border-top: 1px solid #edf2f7; padding-top: 15px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px">
+            <span style="color:var(--muted)">Subtotal:</span>
+            <span id="cart-subtotal">R$ 0,00</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px">
+            <span style="color:var(--muted)">Desconto:</span>
+            <span id="cart-discount" style="color:var(--danger)">- R$ 0,00</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px">
+            <span style="font-weight:600;">Total estimado:</span>
+            <span id="cart-total" style="font-size:1.4rem; font-weight:700; color:var(--accent);">R$ 0,00</span>
+        </div>
+        <button type="button" class="btn btn-green" style="background: var(--whats);" onclick="checkout()">
+            <i class="fa-brands fa-whatsapp"></i> Enviar via WhatsApp
+        </button>
+    </div>
+</aside>
+
+<footer>
+    <div class="footer-content">
+        <p class="footer-about">
+            Espalhando muito amor através de nossos produtos! Trabalhamos com Agendas (escolares e agendamentos), planners, cadernetas de vacina, calendários e muito mais!!!
+        </p>
+        
+        <div class="footer-socials">
+            <a href="https://wa.me/5524993346056" target="_blank" class="btn-social whatsapp">
+                <i class="fa-brands fa-whatsapp"></i> Conversar no Zap
+            </a>
+            <a href="https://www.instagram.com/dulcerecordation" target="_blank" class="btn-social instagram">
+                <i class="fa-brands fa-instagram"></i> Siga no Instagram
+            </a>
+        </div>
+
+        <a href="mailto:dulcerecordatio@gmail.com" class="footer-email">dulcerecordatio@gmail.com</a>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://iktbcuhpybioxbzkdanj.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrdGJjdWhweWJpb3hiemtkYW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxMTc0NDMsImV4cCI6MjA5ODY5MzQ0M30.CgQwfPPktftzcKNQLWpy__-t60K8FWyhrignAWcGCk0";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const WHATS_NUMBER = "5524993346056";
+
+let products = [];
+let coupons = [];
+let cart = [];
+let currentCat = 'todos';
+let activeCoupon = null;
+
+async function init() {
+    await fetchProductsFromSupabase();
+    await fetchCouponsFromSupabase();
+    checkAdminNav();
+}
+
+async function fetchProductsFromSupabase() {
+    const { data, error } = await db.from('produtos').select('*').order('id', { ascending: false });
+    if (!error && data) products = data;
+    renderShop();
+    renderAdminProducts();
+}
+
+async function fetchCouponsFromSupabase() {
+    const { data, error } = await db.from('cupons').select('*').order('id', { ascending: false });
+    if (!error && data) coupons = data;
+    renderAdminCoupons();
+}
+
+function showPage(id) {
+    if (id === 'page-admin') {
+        const isLoggedIn = localStorage.getItem('dulce_session') === 'true';
+        if (!isLoggedIn) {
+            alert("Acesso negado. Por favor, faça login primeiro.");
+            showPage('page-auth');
+            return;
+        }
+    }
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    document.getElementById(id).classList.add('active-page');
+}
+
+function filterCat(cat, el) {
+    document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    currentCat = cat;
+    renderShop();
+}
+
+function renderShop() {
+    const container = document.getElementById('shop-container');
+    const search = document.getElementById('shop-search').value.toLowerCase();
+    container.innerHTML = "";
+
+    products.filter(p => {
+        const matchCat = currentCat === 'todos' || p.cat === currentCat;
+        const matchSearch = p.nome.toLowerCase().includes(search);
+        return matchCat && matchSearch;
+    }).forEach(p => {
+        container.innerHTML += `
+            <div class="product-card">
+                <img src="${p.img || 'https://via.placeholder.com/150'}" alt="${p.nome}" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="product-details">
+                    <h3>${p.nome}</h3>
+                    <p>${p.desc_curta || ''}</p>
+                    <div class="product-price">R$ ${parseFloat(p.preco).toFixed(2)}</div>
+                </div>
+                <button type="button" class="add-to-cart-btn" onclick="addToCart(${p.id})">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+        `;
+    });
+}
+
+function toggleCart() {
+    document.getElementById('cart-sidebar').classList.toggle('open');
+    const overlay = document.getElementById('cart-overlay');
+    overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+}
+
+function showToastNotification() {
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    
+    // Remove a notificação após 3 segundos
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+function addToCart(id) {
+    const item = products.find(p => p.id === id);
+    const inCart = cart.find(c => c.id === id);
+    if(inCart) inCart.qty++;
+    else cart.push({...item, qty: 1});
+    updateCart();
+    
+    // Dispara o alerta customizado na tela
+    showToastNotification();
+}
+
+function updateCart() {
+    const list = document.getElementById('cart-items-list');
+    list.innerHTML = "";
+    let subtotal = 0, count = 0;
+
+    cart.forEach(item => {
+        subtotal += item.preco * item.qty;
+        count += item.qty;
+        list.innerHTML += `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:var(--bg-light); padding:10px; border-radius:8px;">
+                <div>
+                    <b>${item.nome}</b><br>
+                    <small style="color:var(--muted)">${item.qty}x R$ ${parseFloat(item.preco).toFixed(2)}</small>
+                </div>
+                <button onclick="removeFromCart(${item.id})" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        `;
+    });
+
+    let discountValue = activeCoupon ? (subtotal * (activeCoupon.discount / 100)) : 0;
+    let total = subtotal - discountValue;
+
+    document.getElementById('cart-subtotal').innerText = `R$ ${subtotal.toFixed(2)}`;
+    document.getElementById('cart-discount').innerText = `- R$ ${discountValue.toFixed(2)}`;
+    document.getElementById('cart-total').innerText = `R$ ${total.toFixed(2)}`;
+    document.getElementById('cart-badge').innerText = count;
+}
+
+function removeFromCart(id) {
+    cart = cart.filter(c => c.id !== id);
+    updateCart();
+}
+
+function applyCoupon() {
+    const code = document.getElementById('cart-coupon-input').value.trim().toUpperCase();
+    const found = coupons.find(c => c.code === code);
+    const msgEl = document.getElementById('coupon-message');
+
+    if(found) {
+        activeCoupon = found;
+        msgEl.style.color = "var(--secondary)";
+        msgEl.innerText = `Cupom ${found.code} (${found.discount}%) applied!`;
+    } else {
+        activeCoupon = null;
+        msgEl.style.color = "var(--danger)";
+        msgEl.innerText = "Cupom inválido ou expirado.";
+    }
+    updateCart();
+}
+
+function checkout() {
+    if(cart.length === 0) return alert("Seu carrinho está vazio!");
+    let msg = "📸 *Novo Pedido - Recordatio* ❤️\n\n";
+    cart.forEach(c => { msg += `▪️ *${c.nome}* (x${c.qty}) - R$ ${(c.preco * c.qty).toFixed(2)}\n`; });
+    
+    let subtotal = cart.reduce((a, b) => a + (b.preco * b.qty), 0);
+    let discountValue = activeCoupon ? (subtotal * (activeCoupon.discount / 100)) : 0;
+    
+    if(activeCoupon) {
+        msg += `\nCupom Aplicado: *${activeCoupon.code}* (-${activeCoupon.discount}%)\n`;
+    }
+    msg += `*Total do Pedido:* R$ ${(subtotal - discountValue).toFixed(2)}`;
+    window.open(`https://api.whatsapp.com/send?phone=${WHATS_NUMBER}&text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+/* CRUD Produtos */
+function renderAdminProducts() {
+    const list = document.getElementById('admin-products-list');
+    list.innerHTML = "";
+    products.forEach(p => {
+        list.innerHTML += `
+            <tr>
+                <td><b>${p.nome}</b></td>
+                <td>${p.cat === 'encadernacao' ? 'Agendas' : 'Quadros'}</td>
+                <td>R$ ${parseFloat(p.preco).toFixed(2)}</td>
+                <td>
+                    <button class="action-icon edit" onclick="editProduct(${p.id})"><i class="fa-solid fa-pen"></i></button>
+                    <button class="action-icon delete" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+async function saveProduct() {
+    const id = document.getElementById('form-id').value;
+    const nome = document.getElementById('form-nome').value;
+    const cat = document.getElementById('form-cat').value;
+    const preco = parseFloat(document.getElementById('form-preco').value);
+    const estoque = parseInt(document.getElementById('form-estoque').value) || 0;
+    const desc_curta = document.getElementById('form-desc').value;
+    const img = document.getElementById('form-img').value;
+
+    if(!nome || !preco) return alert("Preencha o nome e o preço!");
+
+    const produtoObjeto = { nome, cat, preco, estoque, desc_curta, img };
+
+    if(id) {
+        const { error } = await db.from('produtos').update(produtoObjeto).eq('id', id);
+        if(error) return alert("Erro ao atualizar: " + error.message);
+    } else {
+        const { error } = await db.from('produtos').insert([produtoObjeto]);
+        if(error) return alert("Erro ao salvar: " + error.message);
+    }
+
+    clearProductForm();
+    await fetchProductsFromSupabase();
+}
+
+function editProduct(id) {
+    const p = products.find(prod => prod.id === id);
+    document.getElementById('form-id').value = p.id;
+    document.getElementById('form-nome').value = p.nome;
+    document.getElementById('form-cat').value = p.cat;
+    document.getElementById('form-preco').value = p.preco;
+    document.getElementById('form-estoque').value = p.estoque;
+    document.getElementById('form-desc').value = p.desc_curta;
+    document.getElementById('form-img').value = p.img;
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+async function deleteProduct(id) {
+    if(confirm("Remover este produto?")) {
+        const { error } = await db.from('produtos').delete().eq('id', id);
+        if(error) return alert("Erro ao deletar: " + error.message);
+        await fetchProductsFromSupabase();
+    }
+}
+
+function clearProductForm() {
+    document.getElementById('form-id').value = "";
+    document.getElementById('form-nome').value = "";
+    document.getElementById('form-preco').value = "";
+    document.getElementById('form-estoque').value = "";
+    document.getElementById('form-desc').value = "";
+    document.getElementById('form-img').value = "";
+}
+
+/* CRUD Cupons */
+function renderAdminCoupons() {
+    const list = document.getElementById('admin-coupons-list');
+    list.innerHTML = "";
+    coupons.forEach(c => {
+        list.innerHTML += `
+            <tr>
+                <td><b>${c.code}</b></td>
+                <td>${c.discount}%</td>
+                <td>
+                    <button class="action-icon edit" onclick="editCoupon(${c.id})"><i class="fa-solid fa-pen"></i></button>
+                    <button class="action-icon delete" onclick="deleteCoupon(${c.id})"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+async function saveCoupon() {
+    const id = document.getElementById('coupon-id').value;
+    const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+    const discount = parseInt(document.getElementById('coupon-discount').value);
+
+    if(!code || !discount) return alert("Preencha todos os campos do cupom!");
+
+    const cupomObjeto = { code, discount };
+
+    if(id) {
+        const { error } = await db.from('cupons').update(cupomObjeto).eq('id', id);
+        if(error) return alert("Erro ao atualizar cupom: " + error.message);
+    } else {
+        const { error } = await db.from('cupons').insert([cupomObjeto]);
+        if(error) return alert("Erro ao salvar cupom: " + error.message);
+    }
+
+    document.getElementById('coupon-id').value = "";
+    document.getElementById('coupon-code').value = "";
+    document.getElementById('coupon-discount').value = "";
+    await fetchCouponsFromSupabase();
+}
+
+function editCoupon(id) {
+    const c = coupons.find(coup => coup.id === id);
+    document.getElementById('coupon-id').value = c.id;
+    document.getElementById('coupon-code').value = c.code;
+    document.getElementById('coupon-discount').value = c.discount;
+}
+
+async function deleteCoupon(id) {
+    if(confirm("Remover este cupom permanentemente?")) {
+        const { error } = await db.from('cupons').delete().eq('id', id);
+        if(error) return alert("Erro ao deletar cupom: " + error.message);
+        await fetchCouponsFromSupabase();
+    }
+}
+
+function handleLogin() {
+    const u = document.getElementById('login-user').value;
+    const p = document.getElementById('login-pass').value;
+    if(u === "admin" && p === "admin123") {
+        localStorage.setItem('dulce_session', 'true');
+        checkAdminNav();
+        showPage('page-admin');
+        
+        document.getElementById('login-user').value = "";
+        document.getElementById('login-pass').value = "";
+    } else {
+        alert("Acesso Negado. Usuário ou senha incorretos.");
+    }
+}
+
+function handleLogout() {
+    localStorage.removeItem('dulce_session');
+    checkAdminNav();
+    showPage('page-loja');
+}
+
+function checkAdminNav() {
+    const navBtn = document.getElementById('nav-admin');
+    if(localStorage.getItem('dulce_session') === 'true') {
+        navBtn.style.display = "inline-flex";
+    } else {
+        navBtn.style.display = "none";
+    }
+}
+
+window.onload = init;
+</script>
+</body>
+</html>
