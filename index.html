@@ -165,7 +165,6 @@
         }
         .cart-sidebar.open { right: 0; }
 
-        /* --- ESTILOS DO MODAL DE DETALHES --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2500; display: none; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease; }
         .modal-container { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative; display: flex; flex-direction: column; animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.8); border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; color: var(--primary); z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -509,7 +508,6 @@ function renderShop() {
     });
 }
 
-/* --- FUNÇÕES DO MODAL --- */
 function openProductModal(id, event) {
     const p = products.find(prod => prod.id === id);
     if(!p) return;
@@ -607,17 +605,24 @@ function applyCoupon() {
 
 function checkout() {
     if(cart.length === 0) return alert("Seu carrinho está vazio!");
-    let msg = "📸 *Novo Pedido - Recordatio* ❤️\n\n";
-    cart.forEach(c => { msg += `▪️ *${c.nome}* (x${c.qty}) - R$ ${(c.preco * c.qty).toFixed(2)}\n`; });
+    
+    // Texto limpo estruturado usando quebras de linha nativas codificadas por URI (%0A)
+    let msg = "📸 *Novo Pedido - DulceRecordatio* ❤️%0A%0A";
+    
+    cart.forEach(c => { 
+        msg += `▪️ *${c.nome}* (x${c.qty}) - R$ ${(c.preco * c.qty).toFixed(2)}%0A`; 
+    });
     
     let subtotal = cart.reduce((a, b) => a + (b.preco * b.qty), 0);
     let discountValue = activeCoupon ? (subtotal * (activeCoupon.discount / 100)) : 0;
     
     if(activeCoupon) {
-        msg += `\nCupom Aplicado: *${activeCoupon.code}* (-${activeCoupon.discount}%)\n`;
+        msg += `%0ACupom Aplicado: *${activeCoupon.code}* (-${activeCoupon.discount}%)%0A`;
     }
-    msg += `*Total do Pedido:* R$ ${(subtotal - discountValue).toFixed(2)}`;
-    window.open(`https://api.whatsapp.com/send?phone=${WHATS_NUMBER}&text=${encodeURIComponent(msg)}`, '_blank');
+    
+    msg += `%0A*Total do Pedido:* R$ ${(subtotal - discountValue).toFixed(2)}`;
+    
+    window.open(`https://api.whatsapp.com/send?phone=${WHATS_NUMBER}&text=${msg}`, '_blank');
 }
 
 /* CRUD Produtos */
