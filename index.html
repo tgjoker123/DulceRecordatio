@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DulceRecordatio - Papelaria Afetiva & Escolar</title>
+    <title>Recordatio - Papelaria Afetiva & Escolar</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -57,8 +57,8 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             padding: 15px 5%;
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
             box-shadow: var(--shadow);
             position: sticky;
@@ -67,9 +67,10 @@
             border-bottom: 1px solid #edf2f7;
         }
 
-        .header-right { display: flex; gap: 8px; align-items: center; }
+        .header-left { display: flex; justify-content: flex-start; }
+        .header-right { display: flex; justify-content: flex-end; gap: 8px; align-items: center; }
 
-        .logo { display: flex; align-items: center; gap: 6px; cursor: pointer; text-decoration: none; }
+        .logo { display: flex; align-items: center; gap: 6px; cursor: pointer; text-decoration: none; grid-column: 2; margin: 0 auto; }
         .logo-icons { display: flex; align-items: center; position: relative; color: var(--accent); font-size: 1.2rem; }
         .logo-icons .fa-heart { font-size: 0.6rem; position: absolute; top: -5px; right: -4px; }
         .logo h1 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary); font-weight: 600; letter-spacing: 0.5px; }
@@ -95,7 +96,7 @@
         }
         .btn-admin { background: #edf2f7; color: var(--muted); }
         .btn-login { background: transparent; color: var(--primary); border: 1px solid #e2e8f0; }
-        .btn-green { background: var(--accent); color: white; width: 100%; justify-content: center; border-radius: 12px; padding: 14px; }
+        .btn-green { background: var(--accent); color: white; width: 100%; justify-content: center; border-radius: 12px; padding: 14px; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; }
 
         .search-box {
             background: var(--bg-card);
@@ -116,7 +117,7 @@
 
         .cat-container {
             display: flex; gap: 8px; overflow-x: auto; padding: 5px 5% 15px; margin-bottom: 15px;
-            scrollbar-width: none; -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; -webkit-overflow-scrolling: touch; justify-content: center;
         }
         .cat-container::-webkit-scrollbar { display: none; }
         
@@ -139,7 +140,7 @@
         .product-card {
             background: var(--bg-card); border-radius: 16px; padding: 12px;
             display: flex; align-items: center; gap: 14px; text-align: left;
-            position: relative; border: 1px solid #edf2f7; box-shadow: var(--shadow);
+            position: relative; border: 1px solid #edf2f7; box-shadow: var(--shadow); cursor: pointer;
         }
         .product-card img { width: 85px; height: 85px; object-fit: cover; border-radius: 12px; background: #eee; }
         
@@ -152,6 +153,7 @@
             background: var(--accent-light); border: none; color: var(--accent);
             width: 36px; height: 36px; border-radius: 10px; display: flex;
             align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);
+            z-index: 5;
         }
 
         .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1999; display: none; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
@@ -162,6 +164,16 @@
             box-shadow: var(--shadow);
         }
         .cart-sidebar.open { right: 0; }
+
+        /* --- ESTILOS DO MODAL DE DETALHES --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2500; display: none; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease; }
+        .modal-container { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative; display: flex; flex-direction: column; animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.8); border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; color: var(--primary); z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .modal-img { width: 100%; height: 280px; object-fit: cover; background: #eee; }
+        .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+        .modal-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary); font-weight: 600; }
+        .modal-price { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+        .modal-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.6; max-height: 120px; overflow-y: auto; }
 
         .toast-notification {
             position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 100px);
@@ -198,17 +210,17 @@
 
         .footer-email { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 0.9rem; }
 
-        /* --- OTIMIZAÇÃO CRÍTICA PARA CELULAR (Safar/Chrome Mobile) --- */
         @media (max-width: 768px) {
-            header { padding: 10px 4%; }
+            header { padding: 10px 4%; display: flex; justify-content: space-between; }
+            .header-left { display: none; }
+            .logo { margin: 0; }
             .logo h1 { font-size: 1.3rem; }
             
-            /* Ajuste para caber 2 produtos lado a lado perfeitamente no mobile */
             .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
             .product-card { flex-direction: column; align-items: flex-start; padding: 10px; gap: 10px; }
             .product-card img { width: 100%; height: 130px; border-radius: 10px; }
             .product-details h3 { font-size: 0.85rem; height: 34px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-            .product-details p { display: none; } /* Oculta descrição longa no mobile para limpar visual */
+            .product-details p { display: none; } 
             .product-price { font-size: 0.95rem; margin-top: 2px; }
             
             .add-to-cart-btn { position: absolute; bottom: 10px; right: 10px; width: 32px; height: 32px; }
@@ -218,12 +230,13 @@
             .footer-socials { flex-direction: column; align-items: center; }
             .btn-social { width: 100%; max-width: 280px; justify-content: center; }
             
-            /* Tabela admin rolável no mobile para não quebrar tela */
             .admin-container { overflow-x: auto; padding: 15px; }
             .admin-table { width: 600px; }
+            .modal-img { height: 200px; }
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -237,9 +250,23 @@
     <span>Item adicionado ao carrinho de compras!</span>
 </div>
 
+<div id="product-modal" class="modal-overlay" onclick="closeProductModal(event)">
+    <div class="modal-container">
+        <button class="modal-close" onclick="document.getElementById('product-modal').style.display='none'"><i class="fa-solid fa-xmark"></i></button>
+        <img id="modal-product-img" class="modal-img" src="" alt="">
+        <div class="modal-body">
+            <h2 id="modal-product-title" class="modal-title"></h2>
+            <div id="modal-product-price" class="modal-price"></div>
+            <p id="modal-product-desc" class="modal-desc"></p>
+            <div id="modal-product-action"></div>
+        </div>
+    </div>
+</div>
+
 <header>
+    <div class="header-left"></div>
     <a href="#" class="logo" onclick="showPage('page-loja')">
-        <h1>DulceRecordatio</h1>
+        <h1>Recordatio</h1>
         <div class="logo-icons">
             <i class="fa-solid fa-camera"></i>
             <i class="fa-solid fa-heart"></i>
@@ -280,8 +307,8 @@
             <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
                 <h2>Painel Administrativo</h2>
                 <div style="display:flex; gap:10px;">
-                    <button type="button" class="btn" style="background:#ef4444; color:white; flex:1;" onclick="handleLogout()">Sair De Admin</button>
-                    <button type="button" class="btn" style="background:#7f8c8d; color:white; flex:1;" onclick="showPage('page-loja')">Voltar a Loja</button>
+                    <button type="button" class="btn" style="background:#ef4444; color:white; flex:1;" onclick="handleLogout()">Sair</button>
+                    <button type="button" class="btn" style="background:#7f8c8d; color:white; flex:1;" onclick="showPage('page-loja')">Loja</button>
                 </div>
             </div>
 
@@ -391,10 +418,10 @@
         </p>
         
         <div class="footer-socials">
-            <a href="https://www.instagram.com/dulcerecordatio?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="btn-social whatsapp">
+            <a href="https://wa.me/5524993346056" target="_blank" class="btn-social whatsapp">
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
             </a>
-            <a href="https://www.instagram.com/dulcerecordatio?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="btn-social instagram">
+            <a href="https://www.instagram.com/dulcerecordation" target="_blank" class="btn-social instagram">
                 <i class="fa-brands fa-instagram"></i> Instagram
             </a>
         </div>
@@ -467,19 +494,44 @@ function renderShop() {
         return matchCat && matchSearch;
     }).forEach(p => {
         container.innerHTML += `
-            <div class="product-card">
+            <div class="product-card" onclick="openProductModal(${p.id}, event)">
                 <img src="${p.img || 'https://via.placeholder.com/150'}" alt="${p.nome}" onerror="this.src='https://via.placeholder.com/150'">
                 <div class="product-details">
                     <h3>${p.nome}</h3>
                     <p>${p.desc_curta || ''}</p>
                     <div class="product-price">R$ ${parseFloat(p.preco).toFixed(2)}</div>
                 </div>
-                <button type="button" class="add-to-cart-btn" onclick="addToCart(${p.id})">
+                <button type="button" class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart(${p.id})">
                     <i class="fa-solid fa-plus"></i>
                 </button>
             </div>
         `;
     });
+}
+
+/* --- FUNÇÕES DO MODAL --- */
+function openProductModal(id, event) {
+    const p = products.find(prod => prod.id === id);
+    if(!p) return;
+
+    document.getElementById('modal-product-img').src = p.img || 'https://via.placeholder.com/150';
+    document.getElementById('modal-product-title').innerText = p.nome;
+    document.getElementById('modal-product-price').innerText = `R$ ${parseFloat(p.preco).toFixed(2)}`;
+    document.getElementById('modal-product-desc').innerText = p.desc_curta || 'Sem descrição detalhada disponível.';
+    
+    document.getElementById('modal-product-action').innerHTML = `
+        <button class="btn btn-green" onclick="addToCart(${p.id}); document.getElementById('product-modal').style.display='none';">
+            <i class="fa-solid fa-basket-shopping"></i> Adicionar à Sacola
+        </button>
+    `;
+
+    document.getElementById('product-modal').style.display = 'flex';
+}
+
+function closeProductModal(e) {
+    if(e.target.id === 'product-modal') {
+        document.getElementById('product-modal').style.display = 'none';
+    }
 }
 
 function toggleCart() {
