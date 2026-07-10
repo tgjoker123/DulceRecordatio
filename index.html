@@ -420,6 +420,16 @@ footer{ background:var(--card); padding:36px 5%; border-top:1px solid var(--line
         </div>
       </div>
 
+      <h3 class="section-label">Pedidos</h3>
+      <div style="overflow-x:auto; margin-bottom:22px;">
+        <table class="admin-table">
+          <thead><tr><th>Cliente</th><th>Endereço</th><th>Itens</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="admin-pedidos-list">
+            <tr><td colspan="6" style="text-align:center; color:var(--muted); padding:20px;">Carregando pedidos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <h3 class="section-label">Produtos</h3>
       <div class="form-panel">
         <input type="hidden" id="form-id">
@@ -556,7 +566,7 @@ const FRETE_POR_UF = {
    ESTADO GLOBAL
    ========================================================================== */
 const state = {
-  products: [], coupons: [], cart: [],
+  products: [], coupons: [], cart: [], pedidos: [],
   currentCat: 'todos', activeCoupon: null,
   shippingCost: 0, fretePac: 0, freteSedex: 0,
   localidadeCliente: "", totalGeral: 0
@@ -566,7 +576,7 @@ const state = {
    INICIALIZAÇÃO
    ========================================================================== */
 async function init() {
-  await Promise.all([fetchProducts(), fetchCoupons()]);
+  await Promise.all([fetchProducts(), fetchCoupons(), fetchPedidos()]);
   checkAdminNav();
 }
 window.onload = init;
@@ -805,22 +815,32 @@ async function gerarPreferenciaCheckoutPro() {
   const nome = document.getElementById('chk-nome').value.trim();
   const tel = document.getElementById('chk-tel').value.trim();
   const rua = document.getElementById('chk-rua').value.trim();
+  const bairro = document.getElementById('chk-bairro').value.trim();
   if (!nome || !tel || !rua) return showToast('Preencha nome, WhatsApp e endereço.', true);
 
   const btn = document.getElementById('btn-processar-pagamento');
   btn.innerText = "Gerando checkout seguro...";
   btn.disabled = true;
 
-  const itens = state.cart.map(item => ({
-    title: item.nome, quantity: item.qty, unit_price: parseFloat(item.preco), currency_id: "BRL"
-  }));
-  itens.push({ title: "Frete de entrega Correios", quantity: 1, unit_price: parseFloat(state.shippingCost), currency_id: "BRL" });
+  // Itens no formato simples -- é a Edge Function que monta o payload
+  // que a API do Mercado Pago espera, e que também salva o pedido no banco.
+  const itensPedido = state.cart.map(item => ({ nome: item.nome, qty: item.qty, preco: item.preco }));
+  let subtotal = 0;
+  state.cart.forEach(i => subtotal += i.preco * i.qty);
+  const desconto = state.activeCoupon ? (subtotal * (state.activeCoupon.discount / 100)) : 0;
 
   try {
-    const response = await fetch(`${SUPABASE_URL}/functions/v1/criar-preferencia-mp`, {
+    // Essa Edge Function: 1) salva o pedido como "aguardando_pagamento"
+    // com o endereço completo, e 2) cria a preferência no Mercado Pago.
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/criar-pedido-preferencia`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: itens, cliente: { nome, telephone: tel } })
+      body: JSON.stringify({
+        itens: itensPedido,
+        cliente: { nome, telefone: tel },
+        endereco: { rua, bairro, cidade: state.localidadeCliente },
+        subtotal, frete: state.shippingCost, desconto, total: state.totalGeral
+      })
     });
     const data = await response.json();
     if (!data.preferenceId) throw new Error('Preferência não retornada');
@@ -832,6 +852,7 @@ async function gerarPreferenciaCheckoutPro() {
       customization: { texts: { valueProp: 'smart_option' } }
     });
   } catch (error) {
+    console.error(error);
     showToast('Redirecionando para o checkout seguro...');
     window.location.href = LINK_MERCADO_PAGO_ESTATICO_BACKUP;
   } finally {
@@ -953,6 +974,71 @@ async function deleteCoupon(id) {
   showToast('Cupom excluído.');
   await fetchCoupons();
 }
+
+/* ==========================================================================
+   ADMIN — PEDIDOS
+   Observação: esta tabela só terá RLS liberando leitura para o painel depois
+   que o login de admin virar Supabase Auth de verdade (ver TODO no topo).
+   Até lá, esta seção pode aparecer vazia ou dar erro de permissão -- é
+   esperado e intencional, para não expor dados de clientes sem autenticação.
+   ========================================================================== */
+const STATUS_LABELS = {
+  aguardando_pagamento: { texto: 'Aguardando pagamento', cor: 'var(--muted)' },
+  pago: { texto: 'Pago', cor: 'var(--mint-deep)' },
+  enviado: { texto: 'Enviado', cor: '#3498db' },
+  cancelado: { texto: 'Cancelado', cor: 'var(--danger)' }
+};
+
+async function fetchPedidos() {
+  const { data, error } = await db.from('pedidos').select('*').order('id', { ascending: false });
+  if (error) {
+    document.getElementById('admin-pedidos-list').innerHTML =
+      `<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:20px;">Ainda sem acesso aos pedidos (falta configurar login de admin real). Fale com o desenvolvedor.</td></tr>`;
+    return;
+  }
+  state.pedidos = data || [];
+  renderAdminPedidos();
+}
+
+function renderAdminPedidos() {
+  const list = document.getElementById('admin-pedidos-list');
+  if (!state.pedidos || state.pedidos.length === 0) {
+    list.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:20px;">Nenhum pedido ainda.</td></tr>`;
+    return;
+  }
+  list.innerHTML = state.pedidos.map(p => {
+    const st = STATUS_LABELS[p.status] || { texto: p.status, cor: 'var(--muted)' };
+    const itensTexto = (p.itens || []).map(i => `${i.qty}x ${i.nome}`).join(', ');
+    const endereco = `${p.endereco_rua}${p.endereco_bairro ? ', ' + p.endereco_bairro : ''}${p.endereco_cidade ? ' — ' + p.endereco_cidade : ''}`;
+    return `
+      <tr>
+        <td><b>${p.cliente_nome}</b><br><small>${p.cliente_telefone}</small></td>
+        <td style="font-size:.8rem;">${endereco}</td>
+        <td style="font-size:.8rem;">${itensTexto}</td>
+        <td>R$ ${parseFloat(p.total).toFixed(2)}</td>
+        <td><span style="color:${st.cor}; font-weight:600; font-size:.8rem;">${st.texto}</span></td>
+        <td>
+          ${p.status === 'pago' ? `<button class="btn" style="background:var(--mint); color:#fff; font-size:.75rem; padding:6px 10px;" onclick="marcarComoEnviado(${p.id}, '${p.cliente_telefone}', '${p.cliente_nome.replace(/'/g, "")}')">Marcar enviado</button>` : ''}
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+async function marcarComoEnviado(pedidoId, telefone, nome) {
+  const { error } = await db.from('pedidos').update({ status: 'enviado' }).eq('id', pedidoId);
+  if (error) return showToast('Erro ao atualizar: ' + error.message, true);
+  showToast('Pedido marcado como enviado!');
+  await fetchPedidos();
+  if (confirm(`Avisar ${nome} pelo WhatsApp que o pedido foi enviado?`)) {
+    dispararWhatsEnvio(telefone, nome);
+  }
+}
+
+function dispararWhatsEnvio(celular, nome) {
+  const msg = `Olá ${nome}, tudo bem? Seu pedido na DulceRecordatio já foi postado nos Correios e está a caminho! 💌`;
+  window.open(`https://api.whatsapp.com/send?phone=${celular.replace(/\D/g, '')}&text=${encodeURIComponent(msg)}`, '_blank');
+}
+
 
 /* ==========================================================================
    AUTENTICAÇÃO (ver TODO de segurança no topo do arquivo)
