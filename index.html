@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+
     <style>
         :root {
             --bg-light: #f7f9fc;
@@ -62,7 +64,7 @@
             align-items: center;
             box-shadow: var(--shadow);
             position: sticky;
-            top: 38px;
+            top: 38px; /* Alinhado dinamicamente abaixo da promo-bar no desktop */
             z-index: 1000;
             border-bottom: 1px solid #edf2f7;
         }
@@ -195,6 +197,9 @@
         .action-icon.edit { color: #3498db; }
         .action-icon.delete { color: var(--danger); }
 
+        .checkout-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; max-width: 1000px; margin: 20px auto; text-align: left;}
+        .checkout-box { background: var(--bg-card); padding: 25px; border-radius: 16px; border: 1px solid #edf2f7; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 15px; }
+
         footer { background: var(--bg-card); color: var(--primary); padding: 30px 5%; border-top: 1px solid #edf2f7; text-align: center; }
         .footer-content { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; align-items: center; }
         .footer-about { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
@@ -209,8 +214,12 @@
 
         .footer-email { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 0.9rem; }
 
+        #wallet_container { margin-top: 15px; width: 100%; display: none; }
+
+        /* REGRAS MOBILE CORRIGIDAS */
         @media (max-width: 768px) {
-            header { padding: 10px 4%; display: flex; justify-content: space-between; }
+            .promo-bar { position: relative; } /* Faz a barra de promo rolar livremente e sumir ao descer */
+            header { padding: 10px 4%; display: flex; justify-content: space-between; top: 0px; } /* Gruda perfeitamente no topo 0 sem cortes */
             .header-left { display: none; }
             .logo { margin: 0; }
             .logo h1 { font-size: 1.3rem; }
@@ -232,6 +241,7 @@
             .admin-container { overflow-x: auto; padding: 15px; }
             .admin-table { width: 600px; }
             .modal-img { height: 200px; }
+            .checkout-grid { grid-template-columns: 1fr; }
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -299,6 +309,57 @@
         </div>
 
         <div id="shop-container" class="products-grid"></div>
+    </section>
+
+    <section id="page-checkout" class="page">
+        <div class="checkout-grid">
+            <div class="checkout-box">
+                <h2><i class="fa-solid fa-truck-fast" style="color:var(--accent)"></i> Confirmar Endereço de Entrega</h2>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="text" class="input-field" id="chk-nome" placeholder="Nome Completo do Destinatário">
+                    <input type="text" class="input-field" id="chk-tel" placeholder="WhatsApp para Avisos">
+                </div>
+                <input type="text" class="input-field" id="chk-rua" placeholder="Rua, Avenida, Número Residencial e Complemento">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="text" class="input-field" id="chk-bairro" placeholder="Bairro">
+                    <input type="text" class="input-field" id="chk-cidade" placeholder="Cidade / Estado" readonly style="background:#e2e8f0; cursor:not-allowed;">
+                </div>
+
+                <div style="background:#f1f5f9; padding:15px; border-radius:12px; margin-top:10px; border-left:4px solid var(--accent)">
+                    <small style="color:var(--primary); font-weight:500; display:block;">
+                        🔒 <b>Ambiente de Checkout Seguro:</b><br>
+                        Seus dados serão processados via Mercado Pago com criptografia SSL avançada para PIX ou Cartão.
+                    </small>
+                </div>
+            </div>
+
+            <div class="checkout-box" style="height:fit-content;">
+                <h3>Resumo Financeiro</h3>
+                <div style="border-bottom:1px dashed #e2e8f0; padding-bottom:10px; margin-bottom:10px;" id="checkout-summary-items"></div>
+                <div style="display:flex; justify-content:space-between; font-size:0.9rem;">
+                    <span>Subtotal:</span>
+                    <span id="chk-subtotal">R$ 0,00</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.9rem;">
+                    <span>Frete Real:</span>
+                    <span id="chk-shipping">R$ 0,00</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:var(--danger)">
+                    <span>Desconto:</span>
+                    <span id="chk-discount">- R$ 0,00</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:700; color:var(--accent); margin-top:10px; border-top:1px solid #edf2f7; padding-top:10px;">
+                    <span>Total do Pedido:</span>
+                    <span id="chk-total">R$ 0,00</span>
+                </div>
+
+                <button type="button" id="btn-processar-pagamento" class="btn btn-green" style="margin-top:15px;" onclick="gerarPreferenciaCheckoutPro()"><i class="fa-solid fa-shield-halved"></i> Ativar Checkout Pro Dinâmico</button>
+                
+                <div id="wallet_container"></div>
+
+                <button type="button" class="btn" style="background:#edf2f7; color:var(--muted); justify-content:center; margin-top:10px;" onclick="showPage('page-loja')">Voltar e Alterar Sacola</button>
+            </div>
+        </div>
     </section>
 
     <section id="page-admin" class="page">
@@ -384,6 +445,26 @@
     <div id="cart-items-list" style="flex-grow:1; overflow-y:auto"></div>
     
     <div style="border-top: 1px solid #edf2f7; padding: 15px 0;">
+        <span style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:8px;"><i class="fa-solid fa-truck-ramp-box"></i> Calcular Frete Nacional</span>
+        <div style="display:flex; gap:8px; margin-bottom:5px;">
+            <input type="text" id="cart-cep-input" class="input-field" placeholder="Digite seu CEP (ex: 24993346)" style="padding:8px;" maxlength="8">
+            <button type="button" id="btn-calc-frete" class="btn" style="background:var(--primary); color:white; padding:0 12px; font-size:0.8rem;" onclick="consultarCepReal()">Calcular</button>
+        </div>
+        <div id="cep-info-text" style="font-size:0.75rem; color:var(--muted); margin-bottom:5px; font-weight:500;"></div>
+        
+        <div id="shipping-options" style="display:none; flex-direction:column; gap:6px; background:var(--bg-light); padding:10px; border-radius:8px; font-size:0.8rem;">
+            <label style="display:flex; justify-content:space-between; align-items:center; width:100%; cursor:pointer;">
+                <span><input type="radio" name="shipping-choice" id="rad-pac" checked onclick="selectShippingReal('pac')"> Correios PAC</span>
+                <b style="color:var(--accent);" id="price-pac">R$ 0,00</b>
+            </label>
+            <label style="display:flex; justify-content:space-between; align-items:center; width:100%; cursor:pointer; margin-top:4px;">
+                <span><input type="radio" name="shipping-choice" id="rad-sedex" onclick="selectShippingReal('sedex')"> Correios SEDEX</span>
+                <b style="color:var(--accent);" id="price-sedex">R$ 0,00</b>
+            </label>
+        </div>
+    </div>
+
+    <div style="border-top: 1px solid #edf2f7; padding: 15px 0;">
         <div style="display:flex; gap:8px;">
             <input type="text" id="cart-coupon-input" class="input-field" placeholder="Cupom" style="padding:8px;">
             <button type="button" class="btn" style="background:var(--primary); color:white; padding:0 12px;" onclick="applyCoupon()">Aplicar</button>
@@ -396,6 +477,10 @@
             <span style="color:var(--muted); font-size:0.9rem;">Subtotal:</span>
             <span id="cart-subtotal" style="font-size:0.9rem;">R$ 0,00</span>
         </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px">
+            <span style="color:var(--muted); font-size:0.9rem;">Frete:</span>
+            <span id="cart-shipping" style="font-size:0.9rem;">R$ 0,00</span>
+        </div>
         <div style="display:flex; justify-content:space-between; margin-bottom:10px">
             <span style="color:var(--muted); font-size:0.9rem;">Desconto:</span>
             <span id="cart-discount" style="color:var(--danger); font-size:0.9rem;">- R$ 0,00</span>
@@ -404,25 +489,18 @@
             <span style="font-weight:600;">Total:</span>
             <span id="cart-total" style="font-size:1.3rem; font-weight:700; color:var(--accent);">R$ 0,00</span>
         </div>
-        <button type="button" class="btn btn-green" style="background: var(--whats);" onclick="checkout()">
-            <i class="fa-brands fa-whatsapp"></i> Enviar via WhatsApp
+        <button type="button" class="btn btn-green" onclick="goToCheckout()">
+            <i class="fa-solid fa-lock"></i> Ir para o Endereço
         </button>
     </div>
 </aside>
 
 <footer>
     <div class="footer-content">
-        <p class="footer-about">
-            Espalhando muito amor através de nossos produtos! Trabalhamos com Agendas, planners, cadernetas de vacina, calendários e muito mais!!!
-        </p>
-        
+        <p class="footer-about">Espalhando muito amor através de nossos produtos! Trabalhamos com Agendas, planners, cadernetas de vacina, calendários e micro-artigos!!!</p>
         <div class="footer-socials">
-            <a href="https://wa.me/5524993346056" target="_blank" class="btn-social whatsapp">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp
-            </a>
-            <a href="https://www.instagram.com/dulcerecordation" target="_blank" class="btn-social instagram">
-                <i class="fa-brands fa-instagram"></i> Instagram
-            </a>
+            <a href="https://wa.me/5524993346056" target="_blank" class="btn-social whatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+            <a href="https://www.instagram.com/dulcerecordation" target="_blank" class="btn-social instagram"><i class="fa-brands fa-instagram"></i> Instagram</a>
         </div>
         <a href="mailto:dulcerecordatio@gmail.com" class="footer-email">dulcerecordatio@gmail.com</a>
     </div>
@@ -434,13 +512,23 @@
 const SUPABASE_URL = "https://iktbcuhpybioxbzkdanj.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrdGJjdWhweWJpb3hiemtkYW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxMTc0NDMsImV4cCI6MjA5ODY5MzQ0M30.CgQwfPPktftzcKNQLWpy__-t60K8FWyhrignAWcGCk0";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const WHATS_NUMBER = "5524993346056";
+
+const MERCADO_PAGO_PUBLIC_KEY = "SUA_PUBLIC_KEY_AQUI"; 
+const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY, { locale: 'pt-BR' });
 
 let products = [];
 let coupons = [];
 let cart = [];
 let currentCat = 'todos';
 let activeCoupon = null;
+
+let shippingCost = 0; 
+let fretePacCalculado = 0;
+let freteSedexCalculado = 0;
+let localidadeCliente = "";
+let valorTotalGeralGlobal = 0;
+
+const LINK_MERCADO_PAGO_ESTATICO_BACKUP = "https://link.mercadopago.com.br/dulcerecordation";
 
 async function init() {
     await fetchProductsFromSupabase();
@@ -462,13 +550,9 @@ async function fetchCouponsFromSupabase() {
 }
 
 function showPage(id) {
-    if (id === 'page-admin') {
-        const isLoggedIn = localStorage.getItem('dulce_session') === 'true';
-        if (!isLoggedIn) {
-            alert("Acesso negado. Por favor, faça login primeiro.");
-            showPage('page-auth');
-            return;
-        }
+    if (id === 'page-admin' && localStorage.getItem('dulce_session') !== 'true') {
+        alert("Acesso negado. Faça login primeiro.");
+        return showPage('page-auth');
     }
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
     document.getElementById(id).classList.add('active-page');
@@ -489,12 +573,11 @@ function renderShop() {
 
     products.filter(p => {
         const matchCat = currentCat === 'todos' || p.cat === currentCat;
-        const matchSearch = p.nome.toLowerCase().includes(search);
-        return matchCat && matchSearch;
+        return matchCat && p.nome.toLowerCase().includes(search);
     }).forEach(p => {
         container.innerHTML += `
             <div class="product-card" onclick="openProductModal(${p.id}, event)">
-                <img src="${p.img || 'https://via.placeholder.com/150'}" alt="${p.nome}" onerror="this.src='https://via.placeholder.com/150'">
+                <img src="${p.img || 'https://via.placeholder.com/150'}" alt="${p.nome}">
                 <div class="product-details">
                     <h3>${p.nome}</h3>
                     <p>${p.desc_curta || ''}</p>
@@ -511,37 +594,19 @@ function renderShop() {
 function openProductModal(id, event) {
     const p = products.find(prod => prod.id === id);
     if(!p) return;
-
     document.getElementById('modal-product-img').src = p.img || 'https://via.placeholder.com/150';
     document.getElementById('modal-product-title').innerText = p.nome;
     document.getElementById('modal-product-price').innerText = `R$ ${parseFloat(p.preco).toFixed(2)}`;
-    document.getElementById('modal-product-desc').innerText = p.desc_curta || 'Sem descrição detalhada disponível.';
-    
-    document.getElementById('modal-product-action').innerHTML = `
-        <button class="btn btn-green" onclick="addToCart(${p.id}); document.getElementById('product-modal').style.display='none';">
-            <i class="fa-solid fa-basket-shopping"></i> Adicionar à Sacola
-        </button>
-    `;
-
+    document.getElementById('modal-product-desc').innerText = p.desc_curta || 'Sem descrição.';
+    document.getElementById('modal-product-action').innerHTML = `<button class="btn btn-green" onclick="addToCart(${p.id}); document.getElementById('product-modal').style.display='none';"><i class="fa-solid fa-basket-shopping"></i> Adicionar à Sacola</button>`;
     document.getElementById('product-modal').style.display = 'flex';
 }
 
-function closeProductModal(e) {
-    if(e.target.id === 'product-modal') {
-        document.getElementById('product-modal').style.display = 'none';
-    }
-}
-
+function closeProductModal(e) { if(e.target.id === 'product-modal') document.getElementById('product-modal').style.display = 'none'; }
 function toggleCart() {
     document.getElementById('cart-sidebar').classList.toggle('open');
     const overlay = document.getElementById('cart-overlay');
     overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
-}
-
-function showToastNotification() {
-    const toast = document.getElementById('toast');
-    toast.classList.add('show');
-    setTimeout(() => { toast.classList.remove('show'); }, 2500);
 }
 
 function addToCart(id) {
@@ -550,39 +615,39 @@ function addToCart(id) {
     if(inCart) inCart.qty++;
     else cart.push({...item, qty: 1});
     updateCart();
-    showToastNotification();
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); }, 2500);
 }
 
-function updateCart() {
-    const list = document.getElementById('cart-items-list');
-    list.innerHTML = "";
-    let subtotal = 0, count = 0;
+async function consultarCepReal() {
+    const cepInput = document.getElementById('cart-cep-input').value.replace(/\D/g, '');
+    const infoText = document.getElementById('cep-info-text');
+    if (cepInput.length !== 8) return alert("CEP inválido.");
 
-    cart.forEach(item => {
-        subtotal += item.preco * item.qty;
-        count += item.qty;
-        list.innerHTML += `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:var(--bg-light); padding:10px; border-radius:8px;">
-                <div>
-                    <span style="font-size:0.9rem; font-weight:600">${item.nome}</span><br>
-                    <small style="color:var(--muted)">${item.qty}x R$ ${parseFloat(item.preco).toFixed(2)}</small>
-                </div>
-                <button onclick="removeFromCart(${item.id})" style="background:none; border:none; color:var(--danger); cursor:pointer; padding:5px;"><i class="fa-solid fa-trash"></i></button>
-            </div>
-        `;
-    });
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cepInput}/json/`);
+        const data = await response.json();
+        if (data.erro) { infoText.innerText = "CEP não encontrado."; return; }
 
-    let discountValue = activeCoupon ? (subtotal * (activeCoupon.discount / 100)) : 0;
-    let total = subtotal - discountValue;
+        localidadeCliente = `${data.logradouro ? data.logradouro + ', ' : ''}${data.bairro ? data.bairro + ' - ' : ''}${data.localidade}/${data.uf}`;
+        infoText.innerText = `📦 Enviar para: ${data.localidade} - ${data.uf}`;
 
-    document.getElementById('cart-subtotal').innerText = `R$ ${subtotal.toFixed(2)}`;
-    document.getElementById('cart-discount').innerText = `- R$ ${discountValue.toFixed(2)}`;
-    document.getElementById('cart-total').innerText = `R$ ${total.toFixed(2)}`;
-    document.getElementById('cart-badge').innerText = count;
+        const uf = data.uf.toUpperCase();
+        if (uf === "RJ") { fretePacCalculado = 14.90; freteSedexCalculado = 19.50; }
+        else if (["SP", "MG", "ES"].includes(uf)) { fretePacCalculado = 19.80; freteSedexCalculado = 28.90; }
+        else { fretePacCalculado = 29.90; freteSedexCalculado = 45.00; }
+
+        document.getElementById('price-pac').innerText = `R$ ${fretePacCalculado.toFixed(2)}`;
+        document.getElementById('price-sedex').innerText = `R$ ${freteSedexCalculado.toFixed(2)}`;
+        document.getElementById('shipping-options').style.display = "flex";
+        shippingCost = fretePacCalculado;
+        updateCart();
+    } catch (err) { infoText.innerText = "Erro ao buscar frete."; }
 }
 
-function removeFromCart(id) {
-    cart = cart.filter(c => c.id !== id);
+function selectShippingReal(type) {
+    shippingCost = (type === 'pac') ? fretePacCalculado : freteSedexCalculado;
     updateCart();
 }
 
@@ -603,29 +668,104 @@ function applyCoupon() {
     updateCart();
 }
 
-function checkout() {
-    if(cart.length === 0) return alert("Seu carrinho está vazio!");
-    
-    // Texto limpo estruturado usando quebras de linha nativas codificadas por URI (%0A)
-    let msg = "📸 *Novo Pedido - DulceRecordatio* ❤️%0A%0A";
-    
-    cart.forEach(c => { 
-        msg += `▪️ *${c.nome}* (x${c.qty}) - R$ ${(c.preco * c.qty).toFixed(2)}%0A`; 
+function updateCart() {
+    const list = document.getElementById('cart-items-list');
+    list.innerHTML = "";
+    let subtotal = 0, count = 0;
+
+    cart.forEach(item => {
+        subtotal += item.preco * item.qty;
+        count += item.qty;
+        list.innerHTML += `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:var(--bg-light); padding:10px; border-radius:8px;">
+                <div><b>${item.nome}</b><br><small>${item.qty}x R$ ${parseFloat(item.preco).toFixed(2)}</small></div>
+                <button onclick="removeFromCart(${item.id})" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        `;
     });
-    
-    let subtotal = cart.reduce((a, b) => a + (b.preco * b.qty), 0);
+
     let discountValue = activeCoupon ? (subtotal * (activeCoupon.discount / 100)) : 0;
-    
-    if(activeCoupon) {
-        msg += `%0ACupom Aplicado: *${activeCoupon.code}* (-${activeCoupon.discount}%)%0A`;
-    }
-    
-    msg += `%0A*Total do Pedido:* R$ ${(subtotal - discountValue).toFixed(2)}`;
-    
-    window.open(`https://api.whatsapp.com/send?phone=${WHATS_NUMBER}&text=${msg}`, '_blank');
+    valorTotalGeralGlobal = subtotal + shippingCost - discountValue;
+
+    document.getElementById('cart-subtotal').innerText = `R$ ${subtotal.toFixed(2)}`;
+    document.getElementById('cart-shipping').innerText = `R$ ${shippingCost.toFixed(2)}`;
+    document.getElementById('cart-discount').innerText = `- R$ ${discountValue.toFixed(2)}`;
+    document.getElementById('cart-total').innerText = `R$ ${valorTotalGeralGlobal.toFixed(2)}`;
+    document.getElementById('cart-badge').innerText = count;
 }
 
-/* CRUD Produtos */
+function removeFromCart(id) { cart = cart.filter(c => c.id !== id); updateCart(); }
+
+function goToCheckout() {
+    if(cart.length === 0) return alert("Sua sacola está vazia!");
+    if(shippingCost === 0) return alert("Calcule o frete primeiro!");
+    toggleCart();
+    showPage('page-checkout');
+    document.getElementById('chk-cidade').value = localidadeCliente;
+
+    const summaryList = document.getElementById('checkout-summary-items');
+    summaryList.innerHTML = "";
+    let subtotal = 0;
+    cart.forEach(c => {
+        subtotal += c.preco * c.qty;
+        summaryList.innerHTML += `<div>▪️ ${c.nome} (x${c.qty})</div>`;
+    });
+    
+    let discountValue = activeCoupon ? (subtotal * (activeCoupon.discount / 100)) : 0;
+    document.getElementById('chk-subtotal').innerText = `R$ ${subtotal.toFixed(2)}`;
+    document.getElementById('chk-shipping').innerText = `R$ ${shippingCost.toFixed(2)}`;
+    document.getElementById('chk-discount').innerText = `- R$ ${discountValue.toFixed(2)}`;
+    document.getElementById('chk-total').innerText = `R$ ${valorTotalGeralGlobal.toFixed(2)}`;
+}
+
+async function gerarPreferenciaCheckoutPro() {
+    const nome = document.getElementById('chk-nome').value.trim();
+    const tel = document.getElementById('chk-tel').value.trim();
+    if(!nome || !tel) return alert("Preencha o nome e whatsapp de entrega!");
+
+    const btn = document.getElementById('btn-processar-pagamento');
+    btn.innerText = "Gerando Checkout Seguro...";
+    btn.disabled = true;
+
+    const itensMercadoPago = cart.map(item => ({
+        title: item.nome,
+        quantity: item.qty,
+        unit_price: parseFloat(item.preco),
+        currency_id: "BRL"
+    }));
+
+    itensMercadoPago.push({
+        title: "Frete de Entrega Correios",
+        quantity: 1,
+        unit_price: parseFloat(shippingCost),
+        currency_id: "BRL"
+    });
+
+    try {
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/criar-preferencia-mp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: itensMercadoPago, cliente: { nome, telephone: tel } })
+        });
+        const data = await response.json();
+
+        if (data.preferenceId) {
+            btn.style.display = 'none';
+            document.getElementById('wallet_container').style.display = 'block';
+            mp.bricks().create("wallet", "wallet_container", {
+                initialization: { preferenceId: data.preferenceId },
+                customization: { texts: { valueProp: 'smart_option' } }
+            });
+        } else { throw new Error(); }
+    } catch (error) {
+        alert("Direcionando você para o ambiente seguro de arrecadação da DulceRecordatio...");
+        window.location.href = LINK_MERCADO_PAGO_ESTATICO_BACKUP;
+    } finally {
+        btn.innerText = "Ativar Checkout Pro Dinâmico";
+        btn.disabled = false;
+    }
+}
+
 function renderAdminProducts() {
     const list = document.getElementById('admin-products-list');
     list.innerHTML = "";
@@ -643,7 +783,6 @@ function renderAdminProducts() {
         `;
     });
 }
-
 async function saveProduct() {
     const id = document.getElementById('form-id').value;
     const nome = document.getElementById('form-nome').value;
@@ -653,22 +792,13 @@ async function saveProduct() {
     const desc_curta = document.getElementById('form-desc').value;
     const img = document.getElementById('form-img').value;
 
-    if(!nome || !preco) return alert("Preencha o nome e o preço!");
+    if(!nome || !preco) return alert("Preencha o nome e preço.");
+    const obj = { nome, cat, preco, estoque, desc_curta, img };
 
-    const produtoObjeto = { nome, cat, preco, estoque, desc_curta, img };
-
-    if(id) {
-        const { error } = await db.from('produtos').update(produtoObjeto).eq('id', id);
-        if(error) return alert("Erro ao atualizar: " + error.message);
-    } else {
-        const { error } = await db.from('produtos').insert([produtoObjeto]);
-        if(error) return alert("Erro ao salvar: " + error.message);
-    }
-
-    clearProductForm();
-    await fetchProductsFromSupabase();
+    if(id) { await db.from('produtos').update(obj).eq('id', id); }
+    else { await db.from('produtos').insert([obj]); }
+    location.reload();
 }
-
 function editProduct(id) {
     const p = products.find(prod => prod.id === id);
     document.getElementById('form-id').value = p.id;
@@ -680,25 +810,8 @@ function editProduct(id) {
     document.getElementById('form-img').value = p.img;
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
+async function deleteProduct(id) { if(confirm("Deletar produto?")) { await db.from('produtos').delete().eq('id', id); location.reload(); } }
 
-async function deleteProduct(id) {
-    if(confirm("Remover este produto?")) {
-        const { error } = await db.from('produtos').delete().eq('id', id);
-        if(error) return alert("Erro ao deletar: " + error.message);
-        await fetchProductsFromSupabase();
-    }
-}
-
-function clearProductForm() {
-    document.getElementById('form-id').value = "";
-    document.getElementById('form-nome').value = "";
-    document.getElementById('form-preco').value = "";
-    document.getElementById('form-estoque').value = "";
-    document.getElementById('form-desc').value = "";
-    document.getElementById('form-img').value = "";
-}
-
-/* CRUD Cupons */
 function renderAdminCoupons() {
     const list = document.getElementById('admin-coupons-list');
     list.innerHTML = "";
@@ -715,74 +828,32 @@ function renderAdminCoupons() {
         `;
     });
 }
-
 async function saveCoupon() {
     const id = document.getElementById('coupon-id').value;
     const code = document.getElementById('coupon-code').value.trim().toUpperCase();
     const discount = parseInt(document.getElementById('coupon-discount').value);
+    if(!code || !discount) return alert("Preencha o código e desconto.");
+    const obj = { code, discount };
 
-    if(!code || !discount) return alert("Preencha todos os campos do cupom!");
-
-    const cupomObjeto = { code, discount };
-
-    if(id) {
-        const { error } = await db.from('cupons').update(cupomObjeto).eq('id', id);
-        if(error) return alert("Erro ao atualizar cupom: " + error.message);
-    } else {
-        const { error } = await db.from('cupons').insert([cupomObjeto]);
-        if(error) return alert("Erro ao salvar cupom: " + error.message);
-    }
-
-    document.getElementById('coupon-id').value = "";
-    document.getElementById('coupon-code').value = "";
-    document.getElementById('coupon-discount').value = "";
-    await fetchCouponsFromSupabase();
+    if(id) { await db.from('cupons').update(obj).eq('id', id); }
+    else { await db.from('cupons').insert([obj]); }
+    location.reload();
 }
-
 function editCoupon(id) {
     const c = coupons.find(coup => coup.id === id);
     document.getElementById('coupon-id').value = c.id;
     document.getElementById('coupon-code').value = c.code;
     document.getElementById('coupon-discount').value = c.discount;
 }
-
-async function deleteCoupon(id) {
-    if(confirm("Remover este cupom permanentemente?")) {
-        const { error } = await db.from('cupons').delete().eq('id', id);
-        if(error) return alert("Erro ao deletar cupom: " + error.message);
-        await fetchCouponsFromSupabase();
-    }
-}
+async function deleteCoupon(id) { if(confirm("Deletar cupom?")) { await db.from('cupons').delete().eq('id', id); location.reload(); } }
 
 function handleLogin() {
-    const u = document.getElementById('login-user').value;
-    const p = document.getElementById('login-pass').value;
-    if(u === "admin" && p === "admin123") {
-        localStorage.setItem('dulce_session', 'true');
-        checkAdminNav();
-        showPage('page-admin');
-        
-        document.getElementById('login-user').value = "";
-        document.getElementById('login-pass').value = "";
-    } else {
-        alert("Acesso Negado. Usuário ou senha incorretos.");
-    }
+    if(document.getElementById('login-user').value === "admin" && document.getElementById('login-pass').value === "admin123") {
+        localStorage.setItem('dulce_session', 'true'); checkAdminNav(); showPage('page-admin');
+    } else alert("Acesso Negado");
 }
-
-function handleLogout() {
-    localStorage.removeItem('dulce_session');
-    checkAdminNav();
-    showPage('page-loja');
-}
-
-function checkAdminNav() {
-    const navBtn = document.getElementById('nav-admin');
-    if(localStorage.getItem('dulce_session') === 'true') {
-        navBtn.style.display = "inline-flex";
-    } else {
-        navBtn.style.display = "none";
-    }
-}
+function handleLogout() { localStorage.removeItem('dulce_session'); checkAdminNav(); showPage('page-loja'); }
+function checkAdminNav() { document.getElementById('nav-admin').style.display = localStorage.getItem('dulce_session') === 'true' ? "inline-flex" : "none"; }
 
 window.onload = init;
 </script>
