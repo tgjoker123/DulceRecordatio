@@ -478,7 +478,7 @@ footer{ background:var(--card); padding:36px 5%; border-top:1px solid var(--line
     <div class="admin-container" style="max-width:400px; text-align:center;">
       <h2>Acesso restrito</h2>
       <p style="font-size:.85rem; color:var(--muted); margin-top:8px;">Área exclusiva da equipe DulceRecordatio.</p>
-      <input type="text" id="login-user" class="input-field" placeholder="Usuário" style="margin:20px 0 10px;">
+      <input type="email" id="login-user" class="input-field" placeholder="E-mail" style="margin:20px 0 10px;">
       <input type="password" id="login-pass" class="input-field" placeholder="Senha" style="margin-bottom:20px;">
       <button type="button" class="btn btn-primary btn-block" onclick="handleLogin()">Entrar</button>
     </div>
@@ -544,12 +544,8 @@ const SUPABASE_URL = "https://iktbcuhpybioxbzkdanj.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrdGJjdWhweWJpb3hiemtkYW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxMTc0NDMsImV4cCI6MjA5ODY5MzQ0M30.CgQwfPPktftzcKNQLWpy__-t60K8FWyhrignAWcGCk0";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// TODO (segurança): trocar por Supabase Auth real (email/senha) + políticas
-// de RLS nas tabelas "produtos" e "cupons" restringindo INSERT/UPDATE/DELETE
-// a usuários autenticados com um papel de admin. Hoje o login abaixo só
-// esconde o botão na interface — não impede escrita direta no banco.
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "admin123";
+// Login de admin agora é feito via Supabase Auth (Authentication > Users
+// no painel do Supabase) -- não há mais usuário/senha fixos aqui.
 
 const MERCADO_PAGO_PUBLIC_KEY = "SUA_PUBLIC_KEY_AQUI";
 const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY, { locale: 'pt-BR' });
@@ -569,13 +565,23 @@ const state = {
   products: [], coupons: [], cart: [], pedidos: [],
   currentCat: 'todos', activeCoupon: null,
   shippingCost: 0, fretePac: 0, freteSedex: 0,
-  localidadeCliente: "", totalGeral: 0
+  localidadeCliente: "", totalGeral: 0, isAdmin: false
 };
 
 /* ==========================================================================
    INICIALIZAÇÃO
    ========================================================================== */
 async function init() {
+  // Verifica se já existe uma sessão de admin ativa (ex: se a página foi recarregada)
+  const { data: { session } } = await db.auth.getSession();
+  state.isAdmin = !!session;
+
+  // Mantém state.isAdmin sincronizado sempre que o login/logout mudar
+  db.auth.onAuthStateChange((_event, session) => {
+    state.isAdmin = !!session;
+    checkAdminNav();
+  });
+
   await Promise.all([fetchProducts(), fetchCoupons(), fetchPedidos()]);
   checkAdminNav();
 }
@@ -598,7 +604,7 @@ async function fetchCoupons() {
    NAVEGAÇÃO
    ========================================================================== */
 function showPage(id) {
-  if (id === 'page-admin' && localStorage.getItem('dulce_session') !== 'true') {
+  if (id === 'page-admin' && !state.isAdmin) {
     showToast('Acesso negado. Faça login primeiro.', true);
     return showPage('page-auth');
   }
@@ -1041,21 +1047,34 @@ function dispararWhatsEnvio(celular, nome) {
 
 
 /* ==========================================================================
-   AUTENTICAÇÃO (ver TODO de segurança no topo do arquivo)
+   AUTENTICAÇÃO — via Supabase Auth (Authentication > Users no painel)
    ========================================================================== */
-function handleLogin() {
-  const user = document.getElementById('login-user').value;
-  const pass = document.getElementById('login-pass').value;
-  if (user === ADMIN_USER && pass === ADMIN_PASS) {
-    localStorage.setItem('dulce_session', 'true');
-    checkAdminNav();
-    showPage('page-admin');
-  } else {
-    showToast('Acesso negado.', true);
+async function handleLogin() {
+  const email = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value;
+  if (!email || !password) return showToast('Preencha e-mail e senha.', true);
+
+  const { error } = await db.auth.signInWithPassword({ email, password });
+  if (error) {
+    showToast('Acesso negado: e-mail ou senha incorretos.', true);
+    return;
   }
+  state.isAdmin = true;
+  checkAdminNav();
+  await fetchPedidos(); // agora com sessão, o RLS libera a leitura
+  showPage('page-admin');
 }
-function handleLogout() { localStorage.removeItem('dulce_session'); checkAdminNav(); showPage('page-loja'); }
-function checkAdminNav() { document.getElementById('nav-admin').style.display = localStorage.getItem('dulce_session') === 'true' ? "inline-flex" : "none"; }
+
+async function handleLogout() {
+  await db.auth.signOut();
+  state.isAdmin = false;
+  checkAdminNav();
+  showPage('page-loja');
+}
+
+function checkAdminNav() {
+  document.getElementById('nav-admin').style.display = state.isAdmin ? "inline-flex" : "none";
+}
 </script>
 </body>
 </html>
