@@ -720,8 +720,9 @@ function renderShop() {
   const container = document.getElementById('shop-container');
   const search = document.getElementById('shop-search').value.toLowerCase();
   const list = state.products.filter(p => {
-    const matchCat = state.currentCat === 'todos' || p.cat === state.currentCat;
-    return matchCat && p.nome.toLowerCase().includes(search);
+    const catProduto = (p.cat || '').toString().trim().toLowerCase();
+    const matchCat = state.currentCat === 'todos' || catProduto === state.currentCat;
+    return matchCat && (p.nome || '').toLowerCase().includes(search);
   });
 
   if (list.length === 0) {
