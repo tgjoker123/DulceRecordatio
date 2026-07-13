@@ -625,6 +625,11 @@ const state = {
    INICIALIZAÇÃO
    ========================================================================== */
 async function init() {
+  // Checa PRIMEIRO se é um retorno do Mercado Pago (?pagamento=sucesso etc.)
+  // e já limpa isso da URL -- assim um recarregamento normal da página
+  // nunca mais vai cair de novo na tela de confirmação por engano.
+  checkPaymentReturn();
+
   // Verifica se já existe uma sessão de admin ativa (ex: se a página foi recarregada)
   const { data: { session } } = await db.auth.getSession();
   state.isAdmin = !!session;
@@ -637,7 +642,6 @@ async function init() {
 
   await Promise.all([fetchProducts(), fetchCoupons(), fetchPedidos()]);
   checkAdminNav();
-  checkPaymentReturn();
 }
 
 // Depois do pagamento, o Mercado Pago redireciona de volta pro site com
@@ -653,6 +657,11 @@ const PAGAMENTO_RETORNO = {
 function checkPaymentReturn() {
   const params = new URLSearchParams(window.location.search);
   const status = params.get('pagamento');
+
+  // Limpa o parâmetro da URL imediatamente, exista ele ou não -- garante
+  // que um F5 (recarregar) nunca mais vai reabrir essa tela sozinho.
+  if (status) window.history.replaceState({}, document.title, window.location.pathname);
+
   const config = PAGAMENTO_RETORNO[status];
   if (!config) return;
 
@@ -668,7 +677,6 @@ function checkPaymentReturn() {
   }
 
   showPage('page-obrigado');
-  window.history.replaceState({}, document.title, window.location.pathname);
 }
 window.onload = init;
 
