@@ -229,6 +229,28 @@ header{
 .checkout-grid{ display:grid; grid-template-columns:1.5fr 1fr; gap:20px; max-width:1000px; margin:24px auto 0; text-align:left; }
 .checkout-box{ background:var(--card); padding:26px; border-radius:var(--radius-m); border:1px solid var(--line); box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:14px; }
 .checkout-box h2{ font-size:1.15rem; display:flex; align-items:center; gap:8px; }
+
+/* Indicador de progresso */
+.checkout-steps{ display:flex; align-items:center; justify-content:center; gap:8px; max-width:1000px; margin:0 auto 8px; padding-top:24px; }
+.step-item{ display:flex; flex-direction:column; align-items:center; gap:6px; font-size:.72rem; color:var(--muted); font-weight:600; }
+.step-circle{ width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--line); color:var(--muted); font-size:.8rem; font-weight:700; transition:all .25s var(--ease); }
+.step-item.done .step-circle{ background:var(--mint); color:#fff; }
+.step-item.done{ color:var(--mint-deep); }
+.step-item.active .step-circle{ background:var(--coral); color:#fff; }
+.step-item.active{ color:var(--coral); }
+.step-line{ width:44px; height:2px; background:var(--line); margin-bottom:20px; }
+
+/* Itens do resumo com foto */
+.summary-item{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.summary-item img{ width:44px; height:44px; object-fit:cover; border-radius:8px; background:var(--coral-soft); flex-shrink:0; }
+.summary-item-info{ display:flex; flex-direction:column; }
+.summary-item-info b{ font-size:.85rem; line-height:1.3; }
+.summary-item-info small{ color:var(--muted); font-size:.75rem; }
+
+/* Selos de confiança */
+.trust-badges{ display:flex; gap:8px; flex-wrap:wrap; margin-top:2px; }
+.trust-badge{ display:flex; align-items:center; gap:5px; background:var(--paper); border:1px solid var(--line); padding:6px 10px; border-radius:8px; font-size:.72rem; color:var(--ink-soft); font-weight:500; }
+.trust-badge i{ color:var(--mint-deep); }
 .field-grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .secure-note{ background:var(--coral-soft); padding:14px; border-radius:var(--radius-s); border-left:4px solid var(--coral); font-size:.8rem; color:var(--ink-soft); }
 
@@ -261,6 +283,14 @@ header{
 /* ==========================================================================
    11. FOOTER
    ========================================================================== */
+/* ==========================================================================
+   12b. PÁGINA DE CONFIRMAÇÃO DE PEDIDO
+   ========================================================================== */
+.obrigado-box{ max-width:420px; margin:60px auto; background:var(--card); border:1px solid var(--line); border-radius:var(--radius-l); box-shadow:var(--shadow-md); padding:44px 30px; text-align:center; }
+.obrigado-box i{ font-size:3rem; margin-bottom:16px; display:block; }
+.obrigado-box h2{ font-size:1.4rem; margin-bottom:10px; }
+.obrigado-box p{ color:var(--ink-soft); font-size:.9rem; line-height:1.6; margin-bottom:24px; }
+
 footer{ background:var(--card); padding:36px 5%; border-top:1px solid var(--line); text-align:center; }
 .footer-content{ max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:16px; align-items:center; }
 .footer-about{ font-size:.9rem; color:var(--ink-soft); line-height:1.6; }
@@ -378,7 +408,14 @@ footer{ background:var(--card); padding:36px 5%; border-top:1px solid var(--line
 
   <!-- Checkout -->
   <section id="page-checkout" class="page">
-    <div class="section-heading" style="margin-top:24px;"><h3>Finalizar pedido</h3></div>
+    <div class="checkout-steps">
+      <div class="step-item done"><span class="step-circle"><i class="fa-solid fa-check"></i></span>Sacola</div>
+      <div class="step-line"></div>
+      <div class="step-item active" id="step-entrega"><span class="step-circle">2</span>Entrega</div>
+      <div class="step-line"></div>
+      <div class="step-item" id="step-pagamento"><span class="step-circle">3</span>Pagamento</div>
+    </div>
+    <div class="section-heading" style="margin-top:6px;"><h3>Finalizar pedido</h3></div>
     <div class="checkout-grid">
       <div class="checkout-box">
         <h2><i class="fa-solid fa-truck-fast" style="color:var(--coral)"></i> Endereço de entrega</h2>
@@ -396,16 +433,32 @@ footer{ background:var(--card); padding:36px 5%; border-top:1px solid var(--line
 
       <div class="checkout-box" style="height:fit-content;">
         <h2>Resumo do pedido</h2>
-        <div id="checkout-summary-items" style="border-bottom:1px dashed var(--line); padding-bottom:10px; font-size:.88rem; color:var(--ink-soft);"></div>
+        <div id="checkout-summary-items" style="border-bottom:1px dashed var(--line); padding-bottom:6px;"></div>
         <div class="summary-row"><span>Subtotal</span><span id="chk-subtotal">R$ 0,00</span></div>
         <div class="summary-row"><span>Frete</span><span id="chk-shipping">R$ 0,00</span></div>
         <div class="summary-row" style="color:var(--danger)"><span>Desconto</span><span id="chk-discount">- R$ 0,00</span></div>
         <div class="summary-row total"><span>Total</span><span id="chk-total">R$ 0,00</span></div>
 
-        <button type="button" id="btn-processar-pagamento" class="btn btn-primary btn-block" onclick="gerarPreferenciaCheckoutPro()"><i class="fa-solid fa-shield-halved"></i> Pagar com Mercado Pago</button>
+        <div class="trust-badges">
+          <span class="trust-badge"><i class="fa-solid fa-lock"></i> Compra segura</span>
+          <span class="trust-badge"><i class="fa-solid fa-qrcode"></i> Pix ou cartão</span>
+          <span class="trust-badge"><i class="fa-solid fa-box"></i> Envio rastreado</span>
+        </div>
+
+        <button type="button" id="btn-processar-pagamento" class="btn btn-primary btn-block" style="margin-top:6px;" onclick="gerarPreferenciaCheckoutPro()"><i class="fa-solid fa-shield-halved"></i> Pagar com Mercado Pago</button>
         <div id="wallet_container"></div>
         <button type="button" class="btn btn-ghost btn-block" onclick="showPage('page-loja')">Voltar e alterar sacola</button>
       </div>
+    </div>
+  </section>
+
+  <!-- Confirmação de pedido (retorno do Mercado Pago) -->
+  <section id="page-obrigado" class="page">
+    <div class="obrigado-box">
+      <i id="obrigado-icon" class="fa-solid fa-circle-check" style="color:var(--mint-deep);"></i>
+      <h2 id="obrigado-titulo">Pedido confirmado!</h2>
+      <p id="obrigado-texto">Recebemos seu pagamento e já vamos preparar tudo com muito carinho. Você vai receber novidades pelo WhatsApp.</p>
+      <button type="button" class="btn btn-primary" onclick="showPage('page-loja')"><i class="fa-solid fa-basket-shopping"></i> Voltar para a loja</button>
     </div>
   </section>
 
@@ -584,6 +637,38 @@ async function init() {
 
   await Promise.all([fetchProducts(), fetchCoupons(), fetchPedidos()]);
   checkAdminNav();
+  checkPaymentReturn();
+}
+
+// Depois do pagamento, o Mercado Pago redireciona de volta pro site com
+// ?pagamento=sucesso|pendente|falhou (configurado nos back_urls da Edge
+// Function). Aqui detectamos isso e mostramos uma tela de confirmação,
+// em vez de deixar o cliente "sumir" sem retorno nenhum.
+const PAGAMENTO_RETORNO = {
+  sucesso:  { icon: 'fa-circle-check', cor: 'var(--mint-deep)', titulo: 'Pedido confirmado!', texto: 'Recebemos seu pagamento e já vamos preparar tudo com muito carinho. Você vai receber novidades pelo WhatsApp.' },
+  pendente: { icon: 'fa-clock',        cor: '#f59e0b',          titulo: 'Pagamento pendente', texto: 'Assim que a confirmação chegar, já vamos preparar seu pedido. Fique de olho no WhatsApp.' },
+  falhou:   { icon: 'fa-circle-xmark', cor: 'var(--danger)',    titulo: 'Pagamento não aprovado', texto: 'Não foi dessa vez! Você pode tentar novamente ou falar com a gente pelo WhatsApp.' }
+};
+
+function checkPaymentReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('pagamento');
+  const config = PAGAMENTO_RETORNO[status];
+  if (!config) return;
+
+  document.getElementById('obrigado-icon').className = `fa-solid ${config.icon}`;
+  document.getElementById('obrigado-icon').style.color = config.cor;
+  document.getElementById('obrigado-titulo').innerText = config.titulo;
+  document.getElementById('obrigado-texto').innerText = config.texto;
+
+  if (status === 'sucesso') {
+    state.cart = [];
+    state.activeCoupon = null;
+    updateCart();
+  }
+
+  showPage('page-obrigado');
+  window.history.replaceState({}, document.title, window.location.pathname);
 }
 window.onload = init;
 
@@ -804,10 +889,22 @@ function goToCheckout() {
   showPage('page-checkout');
   document.getElementById('chk-cidade').value = state.localidadeCliente;
 
+  // Reseta o indicador de progresso ao entrar na tela (caso o cliente volte e edite a sacola)
+  document.getElementById('step-entrega').className = 'step-item active';
+  document.getElementById('step-entrega').innerHTML = '<span class="step-circle">2</span>Entrega';
+  document.getElementById('step-pagamento').className = 'step-item';
+  document.getElementById('wallet_container').style.display = 'none';
+  document.getElementById('wallet_container').innerHTML = '';
+  document.getElementById('btn-processar-pagamento').style.display = 'flex';
+
   let subtotal = 0;
   document.getElementById('checkout-summary-items').innerHTML = state.cart.map(c => {
     subtotal += c.preco * c.qty;
-    return `<div>▪️ ${c.nome} (x${c.qty})</div>`;
+    return `
+      <div class="summary-item">
+        <img src="${c.img || 'https://via.placeholder.com/60'}" alt="${c.nome}">
+        <div class="summary-item-info"><b>${c.nome}</b><small>${c.qty}x R$ ${parseFloat(c.preco).toFixed(2)}</small></div>
+      </div>`;
   }).join('');
 
   const discountValue = state.activeCoupon ? (subtotal * (state.activeCoupon.discount / 100)) : 0;
@@ -825,7 +922,8 @@ async function gerarPreferenciaCheckoutPro() {
   if (!nome || !tel || !rua) return showToast('Preencha nome, WhatsApp e endereço.', true);
 
   const btn = document.getElementById('btn-processar-pagamento');
-  btn.innerText = "Gerando checkout seguro...";
+  const textoOriginal = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gerando checkout seguro...';
   btn.disabled = true;
 
   // Itens no formato simples -- é a Edge Function que monta o payload
@@ -857,12 +955,17 @@ async function gerarPreferenciaCheckoutPro() {
       initialization: { preferenceId: data.preferenceId },
       customization: { texts: { valueProp: 'smart_option' } }
     });
+
+    // Avança o indicador visual de progresso para "Pagamento"
+    document.getElementById('step-entrega').className = 'step-item done';
+    document.getElementById('step-entrega').innerHTML = '<span class="step-circle"><i class="fa-solid fa-check"></i></span>Entrega';
+    document.getElementById('step-pagamento').className = 'step-item active';
   } catch (error) {
     console.error(error);
     showToast('Redirecionando para o checkout seguro...');
     window.location.href = LINK_MERCADO_PAGO_ESTATICO_BACKUP;
   } finally {
-    btn.innerText = "Pagar com Mercado Pago";
+    btn.innerHTML = textoOriginal;
     btn.disabled = false;
   }
 }
