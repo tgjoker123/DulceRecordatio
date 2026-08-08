@@ -188,7 +188,11 @@ vira uma função temporária. É por isso que existem dois pontos de entrada �
 
 1. **vercel.com** → *Add New* → *Project* → importe o repositório `DulceRecordatio`
 2. Não mexa em Build Command nem Output Directory — o `vercel.json` já resolve
-3. Antes de clicar em *Deploy*, abra **Environment Variables** e cadastre:
+3. Cadastre as variáveis em **Settings → Environments → clique em `Production`**.
+
+   Atenção: a página *Environments* só lista os ambientes. As variáveis ficam
+   **dentro** de cada um — é preciso entrar no `Production` para achar a seção
+   *Environment Variables*.
 
 | Variável | Valor |
 |---|---|

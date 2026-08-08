@@ -62,17 +62,35 @@ export function criarApp({ servirArquivos = false } = {}) {
   // Diagnóstico de deploy: diz o que está configurado, sem revelar valor
   // nenhum. É a primeira coisa a abrir quando a loja sobe e algo não vai.
   app.get('/api/saude', (req, res) => {
-    res.json({
-      ok: true,
-      versao: '2.0.0',
-      configurado: {
-        banco: Boolean(config.databaseUrl),
-        chaveDeSessao: config.jwtSecret.length >= 24,
-        mercadoPago: Boolean(config.mp.accessToken),
-        linkDeReserva: Boolean(config.mp.linkFallback),
-      },
-      siteUrl: config.siteUrl,
-    });
+    const configurado = {
+      banco: Boolean(config.databaseUrl),
+      chaveDeSessao: config.jwtSecret.length >= 24,
+      mercadoPago: Boolean(config.mp.accessToken),
+      linkDeReserva: Boolean(config.mp.linkFallback),
+    };
+
+    const resposta = { ok: true, versao: '2.0.0', configurado, siteUrl: config.siteUrl };
+
+    // Enquanto o banco não estiver configurado, ajuda a descobrir por quê.
+    // Procura nomes *parecidos* com os esperados (minúscula, hífen, espaço
+    // sobrando) — que é o engano real de quem digita à mão. Não devolve
+    // nome nem valor de variável nenhuma, só a contagem de quase-acertos.
+    // Some sozinho assim que a configuração fica de pé.
+    if (!configurado.banco) {
+      const esperadas = ['DATABASE_URL', 'JWT_SECRET', 'SITE_URL', 'MP_ACCESS_TOKEN', 'MP_LINK_FALLBACK', 'FRETE_GRATIS_ACIMA'];
+      const simplificar = (nome) => nome.toLowerCase().replace(/[^a-z]/g, '');
+      const alvos = esperadas.map(simplificar);
+
+      const quaseAcertos = Object.keys(process.env).filter(
+        (chave) => !esperadas.includes(chave) && alvos.includes(simplificar(chave))
+      ).length;
+
+      resposta.diagnostico = quaseAcertos > 0
+        ? { problema: 'nome-errado', dica: 'Existe variável com nome parecido, mas não idêntico. Os nomes distinguem maiúsculas e usam underline: DATABASE_URL, JWT_SECRET, SITE_URL.' }
+        : { problema: 'nao-chegou', dica: 'Nenhuma variável com esses nomes chegou à função. Cadastre em Settings > Environment Variables, marque o ambiente Production, salve e faça Redeploy — variável nova só vale em deploy novo.' };
+    }
+
+    res.json(resposta);
   });
 
   app.use('/api', rotasLoja);
