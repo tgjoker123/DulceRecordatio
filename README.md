@@ -148,6 +148,31 @@ descontado duas vezes.
 
 ---
 
+## Quando algo dá errado
+
+| Mensagem | O que houve |
+|---|---|
+| `password authentication failed` | Senha errada na `DATABASE_URL` — copie de novo no Neon com *Show password* ligado |
+| `getaddrinfo ENOTFOUND` | Faltou pedaço do endereço ao colar a connection string |
+| `Configuração incompleta` | Alguma linha obrigatória do `.env` ficou vazia |
+| `column "..." does not exist` | Banco de uma versão anterior — rode `npm run setup:db`, que migra sem apagar nada |
+| `A porta ... já está sendo usada` | Outro programa ocupa a porta; troque `PORT` no `.env` |
+
+### Mudei a senha no `.env` e o login não aceita
+
+Isso é esperado. O `.env` **não** é consultado na hora do login: quem lê ele é o
+`npm run setup:db`, que grava o administrador no banco. Editar o arquivo não
+muda a senha que já está gravada no Neon.
+
+Depois de mexer em `ADMIN_EMAIL` ou `ADMIN_SENHA`, rode de novo:
+
+```bash
+npm run setup:db
+```
+
+Confira também o endereço: se o `.env` diz `PORT=3001`, a loja está em
+`http://localhost:3001`. Em `3000` pode estar respondendo outro projeto seu.
+
 ## Publicar na internet
 
 Qualquer hospedagem que rode Node serve (Render, Railway, Fly.io, uma VPS).
