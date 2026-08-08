@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DulceRecordatio — Papelaria Afetiva & Escolar</title>
+<meta name="description" content="Agendas, planners, cadernetas de vacina e quadros feitos à mão para guardar as memórias que valem a pena. Envio para todo o Brasil.">
+<meta name="theme-color" content="#ff6b81">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DulceRecordatio">
+<meta property="og:title" content="DulceRecordatio — Papelaria Afetiva & Escolar">
+<meta property="og:description" content="Agendas, planners, cadernetas de vacina e quadros feitos à mão para guardar as memórias que valem a pena.">
+<meta property="og:locale" content="pt_BR">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💌</text></svg>">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="promo-bar">✨ Espalhando muito amor através de nossos produtos! ✨</div>
+
+<div id="toast" class="toast-notification" role="status" aria-live="polite">
+  <i id="toast-icon" class="fa-solid fa-circle-check" style="color:var(--mint); font-size:1.1rem;"></i>
+  <span id="toast-text"></span>
+</div>
+
+<!-- ============ Modal de produto ============ -->
+<div id="product-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-product-title">
+  <div class="modal-container">
+    <button type="button" class="modal-close" data-fechar-modal aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+    <img id="modal-product-img" class="modal-img" src="" alt="">
+    <div class="modal-body">
+      <div class="cat-label" id="modal-product-cat"></div>
+      <h2 id="modal-product-title" class="modal-title"></h2>
+      <div id="modal-product-price" class="modal-price"></div>
+      <div id="modal-product-stock" style="font-size:.8rem; font-weight:600;"></div>
+      <p id="modal-product-desc" class="modal-desc"></p>
+      <button type="button" id="modal-add" class="btn btn-primary btn-block" style="margin-top:6px;">
+        <i class="fa-solid fa-basket-shopping"></i> Adicionar à sacola
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Header ============ -->
+<header>
+  <div class="header-left"></div>
+  <a href="#/" class="logo">
+    <h1>DulceRecordatio</h1>
+    <div class="logo-icons"><i class="fa-solid fa-camera"></i><i class="fa-solid fa-heart"></i></div>
+  </a>
+  <div class="header-right">
+    <button type="button" class="btn btn-cart" data-abrir-carrinho aria-label="Abrir sacola">
+      <i class="fa-solid fa-basket-shopping"></i><span id="cart-badge" class="cart-badge">0</span>
+    </button>
+    <a href="#/admin" id="nav-admin" class="btn btn-ghost" hidden aria-label="Painel"><i class="fa-solid fa-gear"></i></a>
+    <a href="#/entrar" id="nav-login" class="btn btn-ghost" aria-label="Entrar"><i class="fa-solid fa-user"></i></a>
+  </div>
+</header>
+
+<main class="content">
+
+  <!-- ============ Loja ============ -->
+  <section id="page-loja" class="page active-page">
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow"><i class="fa-solid fa-heart"></i> Papelaria afetiva &amp; escolar</div>
+        <h2>Cada página guarda uma <em>lembrança</em>.</h2>
+        <p>Agendas, planners, cadernetas de vacina e quadros feitos pra registrar os momentos que valem a pena guardar — com carinho, do jeitinho DulceRecordatio.</p>
+        <div class="hero-ctas">
+          <button type="button" class="btn btn-primary" data-ir-produtos><i class="fa-solid fa-basket-shopping"></i> Ver produtos</button>
+          <a href="https://wa.me/5524993346056" target="_blank" rel="noopener" class="btn btn-soft"><i class="fa-brands fa-whatsapp"></i> Falar com a gente</a>
+        </div>
+        <div class="hero-tags">
+          <span class="hero-tag">📦 Envio para todo o Brasil</span>
+          <span class="hero-tag">🎀 Feito com carinho</span>
+          <span class="hero-tag">💳 Pix ou cartão</span>
+        </div>
+      </div>
+    </div>
+    <div class="torn-edge"></div>
+
+    <div id="shop-anchor" style="padding-top:26px;">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <label class="sr-only" for="shop-search">Buscar produtos</label>
+        <input type="search" id="shop-search" placeholder="Procurar lembrança especial...">
+      </div>
+
+      <div class="cat-container" id="cat-container">
+        <button type="button" class="cat-card active" data-cat="todos">Todos os produtos</button>
+        <button type="button" class="cat-card" data-cat="encadernacao">Agendas &amp; Cadernetas</button>
+        <button type="button" class="cat-card" data-cat="decoracao">Quadros &amp; Fotografias</button>
+      </div>
+
+      <div id="shop-container" class="products-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ Checkout ============ -->
+  <section id="page-checkout" class="page">
+    <div class="checkout-steps">
+      <div class="step-item done"><span class="step-circle"><i class="fa-solid fa-check"></i></span>Sacola</div>
+      <div class="step-line"></div>
+      <div class="step-item active" id="step-entrega"><span class="step-circle">2</span>Entrega</div>
+      <div class="step-line"></div>
+      <div class="step-item" id="step-pagamento"><span class="step-circle">3</span>Pagamento</div>
+    </div>
+    <div class="section-heading" style="margin-top:6px;"><h3>Finalizar pedido</h3></div>
+
+    <div class="checkout-grid">
+      <div class="checkout-box">
+        <h2><i class="fa-solid fa-truck-fast" style="color:var(--coral)"></i> Endereço de entrega</h2>
+        <div class="field-grid-2">
+          <input type="text" class="input-field" id="chk-nome" placeholder="Nome completo do destinatário" autocomplete="name">
+          <input type="tel" class="input-field" id="chk-tel" placeholder="WhatsApp com DDD" autocomplete="tel">
+        </div>
+        <input type="email" class="input-field" id="chk-email" placeholder="E-mail (para o recibo do pagamento)" autocomplete="email">
+        <input type="text" class="input-field" id="chk-rua" placeholder="Rua, número e complemento" autocomplete="street-address">
+        <div class="field-grid-2">
+          <input type="text" class="input-field" id="chk-bairro" placeholder="Bairro">
+          <input type="text" class="input-field" id="chk-cidade" placeholder="Cidade / Estado" readonly>
+        </div>
+        <div class="secure-note">🔒 <b>Ambiente seguro:</b> o pagamento é processado pelo Mercado Pago. A DulceRecordatio nunca vê nem guarda os dados do seu cartão.</div>
+      </div>
+
+      <div class="checkout-box">
+        <h2>Resumo do pedido</h2>
+        <div id="checkout-summary-items" style="border-bottom:1px dashed var(--line); padding-bottom:6px;"></div>
+        <div class="summary-row"><span>Subtotal</span><span id="chk-subtotal">R$ 0,00</span></div>
+        <div class="summary-row"><span id="chk-frete-label">Frete</span><span id="chk-shipping">R$ 0,00</span></div>
+        <div class="summary-row" style="color:var(--danger)"><span>Desconto</span><span id="chk-discount">- R$ 0,00</span></div>
+        <div class="summary-row total"><span>Total</span><span id="chk-total">R$ 0,00</span></div>
+
+        <div class="trust-badges">
+          <span class="trust-badge"><i class="fa-solid fa-lock"></i> Compra segura</span>
+          <span class="trust-badge"><i class="fa-solid fa-qrcode"></i> Pix ou cartão</span>
+          <span class="trust-badge"><i class="fa-solid fa-box"></i> Envio rastreado</span>
+        </div>
+
+        <button type="button" id="btn-pagar" class="btn btn-primary btn-block"><i class="fa-solid fa-shield-halved"></i> Pagar com Mercado Pago</button>
+        <a href="#/" class="btn btn-ghost btn-block">Voltar e alterar a sacola</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Confirmação ============ -->
+  <section id="page-obrigado" class="page">
+    <div class="obrigado-box">
+      <i id="obrigado-icon" class="fa-solid fa-circle-check" style="color:var(--mint-deep);"></i>
+      <h2 id="obrigado-titulo">Pedido confirmado!</h2>
+      <div id="obrigado-codigo" class="codigo-pedido" hidden></div>
+      <p id="obrigado-texto">Recebemos seu pedido e já vamos preparar tudo com muito carinho.</p>
+      <a href="#/" class="btn btn-primary"><i class="fa-solid fa-basket-shopping"></i> Voltar para a loja</a>
+    </div>
+  </section>
+
+  <!-- ============ Login ============ -->
+  <section id="page-auth" class="page">
+    <div class="admin-container" style="max-width:400px; text-align:center;">
+      <h2>Acesso restrito</h2>
+      <p style="font-size:.85rem; color:var(--muted); margin-top:8px;">Área exclusiva da equipe DulceRecordatio.</p>
+      <form id="form-login" style="margin-top:20px; display:flex; flex-direction:column; gap:12px;">
+        <input type="email" id="login-user" class="input-field" placeholder="E-mail" autocomplete="username" required>
+        <input type="password" id="login-pass" class="input-field" placeholder="Senha" autocomplete="current-password" required>
+        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+      </form>
+      <div id="login-msg" class="hint err" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ============ Admin ============ -->
+  <section id="page-admin" class="page">
+    <div class="admin-container">
+      <div class="admin-header">
+        <h2>Painel administrativo</h2>
+        <div style="display:flex; gap:10px;">
+          <a href="#/" class="btn btn-ghost" style="flex:1;">Ver loja</a>
+          <button type="button" class="btn btn-danger" style="flex:1;" id="btn-sair">Sair</button>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="admin-stats"></div>
+
+      <!-- Pedidos -->
+      <h3 class="section-label">Pedidos</h3>
+      <div class="filtros" id="filtros-pedidos">
+        <button type="button" class="filtro-btn active" data-status="">Todos</button>
+        <button type="button" class="filtro-btn" data-status="aguardando_pagamento">Aguardando</button>
+        <button type="button" class="filtro-btn" data-status="pago">Pagos</button>
+        <button type="button" class="filtro-btn" data-status="enviado">Enviados</button>
+      </div>
+      <div class="tabela-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Pedido</th><th>Cliente</th><th>Entrega</th><th>Itens</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="admin-pedidos-list"></tbody>
+        </table>
+      </div>
+
+      <!-- Produtos -->
+      <h3 class="section-label">Produtos</h3>
+      <div class="form-panel">
+        <input type="hidden" id="form-id">
+        <div><label for="form-nome">Nome do produto</label><input type="text" id="form-nome" class="input-field" placeholder="Agenda Afetiva 2026"></div>
+        <div class="form-row">
+          <div><label for="form-cat">Categoria</label>
+            <select id="form-cat" class="input-field">
+              <option value="encadernacao">Agendas &amp; Cadernetas</option>
+              <option value="decoracao">Quadros &amp; Fotografias</option>
+            </select>
+          </div>
+          <div><label for="form-preco">Preço (R$)</label><input type="number" step="0.01" min="0" id="form-preco" class="input-field" placeholder="59.90"></div>
+          <div><label for="form-estoque">Estoque</label><input type="number" min="0" id="form-estoque" class="input-field" placeholder="10"></div>
+        </div>
+        <div><label for="form-desc">Descrição curta</label><input type="text" id="form-desc" class="input-field" placeholder="Capa dura personalizada..."></div>
+        <div><label for="form-img">URL da imagem</label><input type="url" id="form-img" class="input-field" placeholder="https://..."></div>
+        <div class="checkbox-row">
+          <label><input type="checkbox" id="form-ativo" checked> Visível na loja</label>
+          <label><input type="checkbox" id="form-destaque"> Destaque</label>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn btn-primary" id="btn-salvar-produto">Salvar produto</button>
+          <button type="button" class="btn btn-ghost" id="btn-cancelar-produto" hidden>Cancelar edição</button>
+        </div>
+      </div>
+      <div class="tabela-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="admin-products-list"></tbody>
+        </table>
+      </div>
+
+      <!-- Cupons -->
+      <h3 class="section-label">Cupons</h3>
+      <div class="form-panel">
+        <input type="hidden" id="coupon-id">
+        <div class="form-row">
+          <div><label for="coupon-code">Código</label><input type="text" id="coupon-code" class="input-field" placeholder="DULCE10"></div>
+          <div><label for="coupon-discount">Desconto (%)</label><input type="number" min="1" max="90" id="coupon-discount" class="input-field" placeholder="10"></div>
+          <div><label for="coupon-min">Compra mínima (R$)</label><input type="number" min="0" step="0.01" id="coupon-min" class="input-field" placeholder="0"></div>
+        </div>
+        <div class="form-row">
+          <div><label for="coupon-validade">Válido até (opcional)</label><input type="date" id="coupon-validade" class="input-field"></div>
+          <div><label for="coupon-max">Limite de usos (opcional)</label><input type="number" min="1" id="coupon-max" class="input-field" placeholder="ilimitado"></div>
+          <div style="display:flex; align-items:flex-end;"><button type="button" class="btn btn-primary btn-block" id="btn-salvar-cupom">Salvar cupom</button></div>
+        </div>
+      </div>
+      <div class="tabela-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Código</th><th>Desconto</th><th>Mínimo</th><th>Usos</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="admin-coupons-list"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ Carrinho ============ -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart-sidebar" id="cart-sidebar" aria-label="Sacola de compras">
+  <div class="cart-head">
+    <h2>Sua sacola</h2>
+    <button type="button" class="icon-btn" data-fechar-carrinho aria-label="Fechar sacola"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <div id="frete-gratis-aviso" class="frete-gratis-aviso" hidden></div>
+  <div id="cart-items-list" style="flex-grow:1; overflow-y:auto;"></div>
+
+  <div class="cart-block">
+    <div class="block-title"><i class="fa-solid fa-truck-ramp-box"></i> Calcular frete</div>
+    <div class="inline-form">
+      <label class="sr-only" for="cart-cep-input">CEP</label>
+      <input type="text" id="cart-cep-input" class="input-field" placeholder="Digite seu CEP" inputmode="numeric" maxlength="9">
+      <button type="button" class="btn btn-dark" id="btn-calcular-frete">Calcular</button>
+    </div>
+    <div id="cep-info-text" class="hint"></div>
+    <div id="shipping-options" class="shipping-options"></div>
+  </div>
+
+  <div class="cart-block">
+    <div class="inline-form">
+      <label class="sr-only" for="cart-coupon-input">Cupom de desconto</label>
+      <input type="text" id="cart-coupon-input" class="input-field" placeholder="Cupom de desconto">
+      <button type="button" class="btn btn-dark" id="btn-aplicar-cupom">Aplicar</button>
+    </div>
+    <div id="coupon-message" class="hint"></div>
+  </div>
+
+  <div class="cart-block" style="border-bottom:none; padding-bottom:0;">
+    <div class="summary-row"><span>Subtotal</span><span id="cart-subtotal">R$ 0,00</span></div>
+    <div class="summary-row"><span>Frete</span><span id="cart-shipping">R$ 0,00</span></div>
+    <div class="summary-row" style="color:var(--danger)"><span>Desconto</span><span id="cart-discount">- R$ 0,00</span></div>
+    <div class="summary-row total"><span>Total</span><span id="cart-total">R$ 0,00</span></div>
+    <button type="button" class="btn btn-primary btn-block" id="btn-ir-checkout"><i class="fa-solid fa-lock"></i> Ir para o endereço</button>
+  </div>
+</aside>
+
+<footer>
+  <div class="footer-content">
+    <p class="footer-about">Espalhando muito amor através de nossos produtos! Trabalhamos com agendas, planners, cadernetas de vacina, calendários e micro-artigos.</p>
+    <div class="footer-socials">
+      <a href="https://wa.me/5524993346056" target="_blank" rel="noopener" class="btn-social whatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+      <a href="https://www.instagram.com/dulcerecordation" target="_blank" rel="noopener" class="btn-social instagram"><i class="fa-brands fa-instagram"></i> Instagram</a>
+    </div>
+    <a href="mailto:dulcerecordatio@gmail.com" class="footer-email">dulcerecordatio@gmail.com</a>
+    <p class="footer-legal">© <span id="ano-atual"></span> DulceRecordatio · Pagamentos processados pelo Mercado Pago</p>
+  </div>
+</footer>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>
