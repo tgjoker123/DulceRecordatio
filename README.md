@@ -110,10 +110,14 @@ Enquanto o site estiver só na sua máquina, marque os pedidos manualmente no pa
 ## Estrutura
 
 ```
+vercel.json          configuração do deploy na Vercel
+api/[...slug].js     entrada da API na Vercel (sem servidor ligado)
 db/schema.sql        estrutura das tabelas
 db/seed.sql          produtos de exemplo
 scripts/             instalação do banco e criação de admin
 server/
+  app.js             monta o Express (usado pela Vercel e pela sua máquina)
+  index.js           entrada local: liga o servidor numa porta
   config.js          leitura do .env (único lugar que lê variáveis de ambiente)
   db.js              conexão com o Neon
   auth.js            login do admin (bcrypt + JWT em cookie httpOnly)
@@ -173,16 +177,62 @@ npm run setup:db
 Confira também o endereço: se o `.env` diz `PORT=3001`, a loja está em
 `http://localhost:3001`. Em `3000` pode estar respondendo outro projeto seu.
 
-## Publicar na internet
+## Publicar na Vercel
 
-Qualquer hospedagem que rode Node serve (Render, Railway, Fly.io, uma VPS).
-O que muda em relação à sua máquina:
+O projeto já vem configurado. Na Vercel não existe um servidor ligado o tempo
+todo: os arquivos de `public/` são entregues pela CDN, e cada chamada a `/api`
+vira uma função temporária. É por isso que existem dois pontos de entrada —
+`server/index.js` para a sua máquina e `api/[...slug].js` para a Vercel.
 
-1. Cadastre as mesmas variáveis do `.env` no painel da hospedagem
+### Passo a passo
+
+1. **vercel.com** → *Add New* → *Project* → importe o repositório `DulceRecordatio`
+2. Não mexa em Build Command nem Output Directory — o `vercel.json` já resolve
+3. Antes de clicar em *Deploy*, abra **Environment Variables** e cadastre:
+
+| Variável | Valor |
+|---|---|
+| `DATABASE_URL` | a connection string do Neon |
+| `JWT_SECRET` | a mesma chave longa do seu `.env` |
+| `MP_ACCESS_TOKEN` | o token do Mercado Pago (pode deixar pra depois) |
+| `MP_LINK_FALLBACK` | seu link estático do Mercado Pago |
+| `SITE_URL` | *deixe em branco por enquanto* |
+| `FRETE_GRATIS_ACIMA` | `250` |
+
+`NODE_ENV=production` a Vercel já define sozinha. `PORT` não é usada lá.
+
+4. **Deploy**. No fim ela te dá um endereço, tipo `dulce-recordatio.vercel.app`
+5. Volte em *Settings → Environment Variables* e preencha o `SITE_URL` com esse
+   endereço, **com `https://` e sem barra no final**. Depois *Deployments →
+   Redeploy*, senão o Mercado Pago não consegue devolver o cliente pra loja.
+
+### Detalhes que importam
+
+**O banco continua sendo o Neon.** A Vercel só roda o código. Não precisa
+migrar nada, e o `npm run setup:db` você continua rodando da sua máquina.
+
+**Deixe a função na região de São Paulo.** Em *Settings → Functions*, escolha
+`gru1`. O padrão é nos Estados Unidos, e cada consulta ao Neon (que está em
+`sa-east-1`) faria a viagem de ida e volta à toa.
+
+**O webhook passa a funcionar.** Cadastre no painel do Mercado Pago:
+`https://seu-endereco.vercel.app/api/pagamentos/webhook` — é ele que marca o
+pedido como pago e baixa o estoque sozinho.
+
+**Limite de tentativas de login.** Ele é guardado na memória da função. Como
+cada função é temporária, a proteção contra força bruta fica mais fraca na
+Vercel do que num servidor comum. Para uma loja desse porte, tudo bem.
+
+## Publicar em outro lugar
+
+Qualquer hospedagem que rode Node também serve (Render, Railway, Fly.io, VPS).
+Nesse caso `api/` e `vercel.json` são ignorados, e o que vale é:
+
+1. As mesmas variáveis do `.env` no painel da hospedagem
 2. `SITE_URL` = o domínio real, com `https://`
 3. `NODE_ENV=production`
 4. Comando de start: `npm start`
-5. Cadastre a URL do webhook no painel do Mercado Pago
+5. A URL do webhook cadastrada no Mercado Pago
 
 ---
 
