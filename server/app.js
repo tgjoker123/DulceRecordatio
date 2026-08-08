@@ -59,7 +59,21 @@ export function criarApp({ servirArquivos = false } = {}) {
   });
 
   /* ---------------- API ---------------- */
-  app.get('/api/saude', (req, res) => res.json({ ok: true, versao: '2.0.0' }));
+  // Diagnóstico de deploy: diz o que está configurado, sem revelar valor
+  // nenhum. É a primeira coisa a abrir quando a loja sobe e algo não vai.
+  app.get('/api/saude', (req, res) => {
+    res.json({
+      ok: true,
+      versao: '2.0.0',
+      configurado: {
+        banco: Boolean(config.databaseUrl),
+        chaveDeSessao: config.jwtSecret.length >= 24,
+        mercadoPago: Boolean(config.mp.accessToken),
+        linkDeReserva: Boolean(config.mp.linkFallback),
+      },
+      siteUrl: config.siteUrl,
+    });
+  });
 
   app.use('/api', rotasLoja);
   app.use('/api', rotasPedidos);
@@ -84,8 +98,9 @@ export function criarApp({ servirArquivos = false } = {}) {
   app.use((erro, req, res, next) => {
     const status = erro.status || 500;
     if (status >= 500) console.error('[erro]', erro);
+    const podeMostrar = status < 500 || erro.exposto;
     res.status(status).json({
-      erro: status >= 500 ? 'Erro interno. Tente novamente em instantes.' : erro.message,
+      erro: podeMostrar ? erro.message : 'Erro interno. Tente novamente em instantes.',
     });
   });
 

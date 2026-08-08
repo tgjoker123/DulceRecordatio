@@ -6,9 +6,16 @@ export function rota(handler) {
 }
 
 export class ErroHttp extends Error {
-  constructor(status, mensagem) {
+  /**
+   * `exposto` libera a mensagem para o cliente mesmo em erro 500.
+   * Use só quando o texto não revela nada sensível — é o caso de erro de
+   * configuração, onde esconder o motivo só faz o problema demorar mais
+   * para ser achado.
+   */
+  constructor(status, mensagem, { exposto = false } = {}) {
     super(mensagem);
     this.status = status;
+    this.exposto = exposto;
   }
 }
 
