@@ -17,8 +17,10 @@ export function separarComandos(conteudo) {
 }
 
 export async function executarComando(comando) {
-  if (typeof sql.query === 'function') return sql.query(comando);
-  return sql([comando]); // chamada equivalente a uma template string sem valores
+  if (typeof sql.query !== 'function') {
+    throw new Error('Driver do Neon sem suporte a sql.query(). Rode "npm install" para atualizar.');
+  }
+  return sql.query(comando);
 }
 
 export async function rodarArquivoSql(caminho) {

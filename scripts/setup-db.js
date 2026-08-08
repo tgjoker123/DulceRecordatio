@@ -12,13 +12,25 @@ import { checarConfig } from '../server/config.js';
 import { sql } from '../server/db.js';
 import { gerarHashSenha } from '../server/auth.js';
 import { rodarArquivoSql } from './_sql-runner.js';
+import { migrar } from './_migracao.js';
 
 const raiz = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 if (!checarConfig()) process.exit(1);
 
 try {
-  console.log('\n> Criando as tabelas...');
+  // Primeiro acerta tabelas de versões anteriores, senão os índices do
+  // schema.sql tentariam usar colunas que ainda não existem.
+  console.log('\n> Conferindo tabelas que já existiam...');
+  const mudancas = await migrar();
+  if (mudancas.length) {
+    mudancas.forEach((m) => console.log(`  ${m}`));
+    console.log(`  ${mudancas.length} ajuste(s) aplicado(s) — nada foi apagado.`);
+  } else {
+    console.log('  Nada a ajustar.');
+  }
+
+  console.log('\n> Criando o que estiver faltando...');
   const total = await rodarArquivoSql(path.join(raiz, 'db', 'schema.sql'));
   console.log(`  ${total} comandos aplicados.`);
 
