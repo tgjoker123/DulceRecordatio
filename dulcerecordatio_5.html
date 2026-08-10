@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DulceRecordatio — Papelaria Afetiva & Escolar</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+
+<style>
+/* ==========================================================================
+   1. DESIGN TOKENS
+   Paleta original preservada: ink (primary), coral (accent), mint (secondary)
+   Assinatura visual: bordas "recortadas" como papel de scrapbook, usadas com
+   moderação em transições de seção e em cantos de cartão de produto.
+   ========================================================================== */
+:root{
+  --paper:        #f7f9fc;
+  --card:         #ffffff;
+  --ink:          #2c3e50;
+  --ink-soft:     #5b6b7c;
+  --muted:        #7f8c8d;
+  --coral:        #ff6b81;
+  --coral-soft:   #ffeef1;
+  --mint:         #4ade80;
+  --mint-deep:    #16a34a;
+  --danger:       #ef4444;
+  --whats:        #25D366;
+  --insta:        #E1306C;
+  --line:         #eef1f6;
+  --shadow-sm:    0 2px 8px rgba(44,62,80,.05);
+  --shadow-md:    0 10px 28px rgba(44,62,80,.08);
+  --shadow-lg:    0 24px 48px rgba(44,62,80,.16);
+  --radius-s:     10px;
+  --radius-m:     16px;
+  --radius-l:     24px;
+  --ease:         cubic-bezier(.16,1,.3,1);
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; -webkit-tap-highlight-color:transparent; }
+html{ scroll-behavior:smooth; }
+body{ background:var(--paper); color:var(--ink); overflow-x:hidden; }
+h1,h2,h3,.display{ font-family:'Playfair Display',serif; }
+img{ max-width:100%; display:block; }
+button{ font-family:inherit; }
+a{ color:inherit; }
+:focus-visible{ outline:2px solid var(--coral); outline-offset:2px; }
+@media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
+
+.eyebrow{ font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; font-weight:600; color:var(--coral); }
+
+/* Assinatura: borda "rasgada" de papel, usada nas transições hero -> conteúdo */
+.torn-edge{
+  height:22px; width:100%;
+  background:var(--paper);
+  clip-path: polygon(
+    0% 100%, 0% 30%, 3% 60%, 6% 20%, 9% 65%, 12% 15%, 15% 55%, 18% 10%, 21% 60%,
+    24% 25%, 27% 70%, 30% 20%, 33% 55%, 36% 15%, 39% 65%, 42% 10%, 45% 60%,
+    48% 25%, 51% 70%, 54% 15%, 57% 55%, 60% 10%, 63% 65%, 66% 20%, 69% 60%,
+    72% 15%, 75% 55%, 78% 10%, 81% 65%, 84% 20%, 87% 60%, 90% 15%, 93% 65%,
+    96% 20%, 100% 55%, 100% 100%
+  );
+}
+
+/* ==========================================================================
+   2. PROMO BAR + HEADER
+   ========================================================================== */
+.promo-bar{
+  background:linear-gradient(90deg,#ff6b81,#ff9ff3);
+  color:#fff; text-align:center; padding:9px 20px;
+  font-size:.82rem; font-weight:600; letter-spacing:.03em;
+  position:sticky; top:0; z-index:1001;
+}
+
+header{
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  padding:14px 5%;
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+  box-shadow:var(--shadow-sm);
+  position:sticky; top:36px; z-index:1000;
+  border-bottom:1px solid var(--line);
+  transition:box-shadow .2s var(--ease);
+}
+.header-left{ display:flex; justify-content:flex-start; }
+.header-right{ display:flex; justify-content:flex-end; gap:8px; align-items:center; }
+
+.logo{ display:flex; align-items:center; gap:7px; cursor:pointer; text-decoration:none; grid-column:2; margin:0 auto; }
+.logo-icons{ display:flex; align-items:center; position:relative; color:var(--coral); font-size:1.2rem; }
+.logo-icons .fa-heart{ font-size:.6rem; position:absolute; top:-5px; right:-4px; }
+.logo h1{ font-size:1.5rem; color:var(--ink); font-weight:600; letter-spacing:.02em; }
+
+.btn{
+  padding:10px 14px; border-radius:var(--radius-s); border:none; cursor:pointer;
+  font-weight:600; display:inline-flex; align-items:center; gap:8px;
+  transition:transform .15s var(--ease), background .15s var(--ease); font-size:.9rem;
+}
+.btn:active{ transform:scale(.96); }
+.btn-cart{ background:var(--coral-soft); color:var(--coral); position:relative; }
+.cart-badge{ position:absolute; top:-5px; right:-5px; background:var(--coral); color:#fff; font-size:.68rem; padding:2px 6px; border-radius:50%; font-weight:700; }
+.btn-admin{ background:var(--line); color:var(--muted); }
+.btn-login{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+.btn-primary{ background:var(--coral); color:#fff; }
+.btn-primary:hover{ background:#f0536b; }
+.btn-block{ width:100%; justify-content:center; border-radius:var(--radius-s); padding:14px; font-weight:600; }
+.btn-ghost{ background:var(--line); color:var(--muted); justify-content:center; }
+
+/* ==========================================================================
+   3. HERO — apresentação da marca (novo; a loja antes ia direto pra busca)
+   ========================================================================== */
+.hero{
+  position:relative; padding:56px 5% 40px; text-align:center; overflow:hidden;
+  background:radial-gradient(circle at 15% 20%, var(--coral-soft) 0%, transparent 55%),
+             radial-gradient(circle at 85% 0%, #eafff2 0%, transparent 50%);
+}
+.hero-inner{ max-width:640px; margin:0 auto; }
+.hero .eyebrow{ display:inline-flex; align-items:center; gap:6px; margin-bottom:14px; }
+.hero h2{ font-size:clamp(1.9rem, 4.5vw, 2.7rem); font-weight:600; line-height:1.15; color:var(--ink); margin-bottom:14px; }
+.hero h2 em{ font-style:italic; color:var(--coral); }
+.hero p{ color:var(--ink-soft); font-size:1rem; line-height:1.6; margin-bottom:26px; }
+.hero-ctas{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.hero-tags{ display:flex; gap:10px; justify-content:center; margin-top:28px; flex-wrap:wrap; }
+.hero-tag{ background:var(--card); border:1px solid var(--line); padding:6px 14px; border-radius:20px; font-size:.78rem; color:var(--ink-soft); box-shadow:var(--shadow-sm); }
+
+/* ==========================================================================
+   4. BUSCA + CATEGORIAS
+   ========================================================================== */
+.search-box{
+  background:var(--card); display:flex; align-items:center; gap:10px; padding:4px 16px;
+  border-radius:var(--radius-m); border:1px solid var(--line); margin:0 auto 18px;
+  width:90%; max-width:600px; color:var(--muted); box-shadow:var(--shadow-sm);
+}
+.search-box i{ color:var(--coral); }
+.search-box input{ background:transparent; border:none; outline:none; padding:11px 0; width:100%; color:var(--ink); font-size:.95rem; }
+
+.cat-container{ display:flex; gap:8px; overflow-x:auto; padding:0 5% 18px; margin-bottom:6px; scrollbar-width:none; -webkit-overflow-scrolling:touch; justify-content:center; }
+.cat-container::-webkit-scrollbar{ display:none; }
+.cat-card{
+  background:var(--card); padding:9px 18px; border-radius:20px; cursor:pointer; white-space:nowrap;
+  font-size:.85rem; font-weight:500; border:1px solid var(--line); color:var(--ink-soft);
+  transition:all .2s var(--ease); box-shadow:var(--shadow-sm);
+}
+.cat-card.active, .cat-card:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
+
+/* ==========================================================================
+   5. PÁGINAS / GRID DE PRODUTOS
+   ========================================================================== */
+.page{ display:none; padding:0 5% 60px; animation:fadeIn .35s var(--ease); }
+.active-page{ display:block; }
+@keyframes fadeIn{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
+@keyframes scaleUp{ from{ opacity:0; transform:scale(.94);} to{ opacity:1; transform:scale(1);} }
+
+.section-heading{ text-align:center; margin-bottom:26px; }
+.section-heading h3{ font-size:1.3rem; font-weight:600; color:var(--ink); }
+
+.products-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:20px; max-width:1200px; margin:0 auto; }
+.empty-state{ text-align:center; padding:60px 20px; color:var(--muted); grid-column:1/-1; }
+.empty-state i{ font-size:2rem; color:var(--coral); margin-bottom:10px; display:block; }
+
+.product-card{
+  background:var(--card); border-radius:var(--radius-m); overflow:hidden; cursor:pointer;
+  border:1px solid var(--line); box-shadow:var(--shadow-sm); transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+  display:flex; flex-direction:column; position:relative;
+}
+.product-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-md); }
+.product-card .img-wrap{ position:relative; aspect-ratio:1/1; background:var(--coral-soft); overflow:hidden; }
+.product-card img{ width:100%; height:100%; object-fit:cover; }
+.product-card .stock-tag{
+  position:absolute; top:10px; left:10px; background:rgba(255,255,255,.92); color:var(--mint-deep);
+  font-size:.68rem; font-weight:700; padding:4px 9px; border-radius:8px; letter-spacing:.02em;
+}
+.product-card .stock-tag.low{ color:var(--danger); }
+.product-details{ padding:14px; display:flex; flex-direction:column; gap:4px; flex:1; }
+.product-details h4{ font-size:.92rem; font-weight:600; color:var(--ink); line-height:1.3; }
+.product-details .cat-label{ font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+.product-footer{ display:flex; align-items:center; justify-content:space-between; margin-top:6px; }
+.product-price{ font-size:1.05rem; font-weight:700; color:var(--coral); }
+.add-to-cart-btn{
+  background:var(--coral); border:none; color:#fff; width:34px; height:34px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .15s var(--ease);
+}
+.add-to-cart-btn:hover{ transform:scale(1.08); }
+
+/* ==========================================================================
+   6. CARRINHO (sidebar)
+   ========================================================================== */
+.cart-overlay{ position:fixed; inset:0; background:rgba(44,62,80,.4); z-index:1999; display:none; backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); }
+.cart-sidebar{
+  position:fixed; right:-420px; top:0; width:100%; max-width:400px; height:100%;
+  background:var(--card); z-index:2000; padding:24px; transition:.35s var(--ease);
+  display:flex; flex-direction:column; border-left:1px solid var(--line); box-shadow:var(--shadow-lg);
+}
+.cart-sidebar.open{ right:0; }
+.cart-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+.cart-head h2{ font-size:1.2rem; }
+.icon-btn{ background:none; border:none; color:var(--ink); font-size:1.4rem; cursor:pointer; line-height:1; }
+.cart-empty{ text-align:center; color:var(--muted); padding:40px 10px; }
+.cart-empty i{ font-size:1.8rem; color:var(--coral-soft); display:block; margin-bottom:10px; }
+.cart-line{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; background:var(--paper); padding:10px 12px; border-radius:var(--radius-s); }
+.cart-line b{ font-size:.88rem; } .cart-line small{ color:var(--muted); }
+.cart-block{ border-top:1px solid var(--line); padding:15px 0; }
+.cart-block .block-title{ font-size:.82rem; font-weight:600; display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+.input-field{ padding:11px 13px; border-radius:9px; background:var(--paper); border:1px solid var(--line); color:var(--ink); width:100%; outline:none; font-size:.9rem; transition:border-color .15s; }
+.input-field:focus{ border-color:var(--coral); }
+.inline-form{ display:flex; gap:8px; }
+.shipping-options{ display:none; flex-direction:column; gap:6px; background:var(--paper); padding:10px; border-radius:9px; font-size:.82rem; margin-top:8px; }
+.shipping-options label{ display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+.summary-row{ display:flex; justify-content:space-between; font-size:.9rem; margin-bottom:6px; color:var(--ink-soft); }
+.summary-row.total{ font-size:1.25rem; font-weight:700; color:var(--coral); margin-top:8px; border-top:1px solid var(--line); padding-top:10px; }
+.summary-row.total span:first-child{ color:var(--ink); font-size:1rem; font-weight:600; }
+
+/* ==========================================================================
+   7. MODAL DE PRODUTO
+   ========================================================================== */
+.modal-overlay{ position:fixed; inset:0; background:rgba(44,62,80,.5); z-index:2500; display:none; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); animation:fadeIn .2s; }
+.modal-container{ background:var(--card); width:100%; max-width:480px; border-radius:var(--radius-l); overflow:hidden; box-shadow:var(--shadow-lg); position:relative; animation:scaleUp .3s var(--ease); }
+.modal-close{ position:absolute; top:14px; right:14px; background:rgba(255,255,255,.9); border:none; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem; z-index:10; box-shadow:var(--shadow-sm); }
+.modal-img{ width:100%; height:280px; object-fit:cover; background:var(--coral-soft); }
+.modal-body{ padding:24px; display:flex; flex-direction:column; gap:10px; }
+.modal-title{ font-size:1.35rem; font-weight:600; }
+.modal-price{ font-size:1.2rem; font-weight:700; color:var(--coral); }
+.modal-desc{ font-size:.9rem; color:var(--ink-soft); line-height:1.6; max-height:110px; overflow-y:auto; }
+
+/* ==========================================================================
+   8. CHECKOUT
+   ========================================================================== */
+.checkout-grid{ display:grid; grid-template-columns:1.5fr 1fr; gap:20px; max-width:1000px; margin:24px auto 0; text-align:left; }
+.checkout-box{ background:var(--card); padding:26px; border-radius:var(--radius-m); border:1px solid var(--line); box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:14px; }
+.checkout-box h2{ font-size:1.15rem; display:flex; align-items:center; gap:8px; }
+
+/* Indicador de progresso */
+.checkout-steps{ display:flex; align-items:center; justify-content:center; gap:8px; max-width:1000px; margin:0 auto 8px; padding-top:24px; }
+.step-item{ display:flex; flex-direction:column; align-items:center; gap:6px; font-size:.72rem; color:var(--muted); font-weight:600; }
+.step-circle{ width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--line); color:var(--muted); font-size:.8rem; font-weight:700; transition:all .25s var(--ease); }
+.step-item.done .step-circle{ background:var(--mint); color:#fff; }
+.step-item.done{ color:var(--mint-deep); }
+.step-item.active .step-circle{ background:var(--coral); color:#fff; }
+.step-item.active{ color:var(--coral); }
+.step-line{ width:44px; height:2px; background:var(--line); margin-bottom:20px; }
+
+/* Itens do resumo com foto */
+.summary-item{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.summary-item img{ width:44px; height:44px; object-fit:cover; border-radius:8px; background:var(--coral-soft); flex-shrink:0; }
+.summary-item-info{ display:flex; flex-direction:column; }
+.summary-item-info b{ font-size:.85rem; line-height:1.3; }
+.summary-item-info small{ color:var(--muted); font-size:.75rem; }
+
+/* Selos de confiança */
+.trust-badges{ display:flex; gap:8px; flex-wrap:wrap; margin-top:2px; }
+.trust-badge{ display:flex; align-items:center; gap:5px; background:var(--paper); border:1px solid var(--line); padding:6px 10px; border-radius:8px; font-size:.72rem; color:var(--ink-soft); font-weight:500; }
+.trust-badge i{ color:var(--mint-deep); }
+.field-grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.secure-note{ background:var(--coral-soft); padding:14px; border-radius:var(--radius-s); border-left:4px solid var(--coral); font-size:.8rem; color:var(--ink-soft); }
+
+/* ==========================================================================
+   9. TOAST
+   ========================================================================== */
+.toast-notification{
+  position:fixed; bottom:20px; left:50%; transform:translate(-50%, 110px); opacity:0;
+  background:var(--ink); color:#fff; padding:13px 20px; border-radius:12px; box-shadow:var(--shadow-lg);
+  display:flex; align-items:center; gap:10px; z-index:3000; font-weight:500; font-size:.85rem;
+  width:90%; max-width:340px; transition:transform .35s var(--ease), opacity .3s; border-left:4px solid var(--mint);
+}
+.toast-notification.show{ transform:translate(-50%,0); opacity:1; }
+
+/* ==========================================================================
+   10. ADMIN
+   ========================================================================== */
+.admin-container{ max-width:900px; margin:20px auto; background:var(--card); padding:22px; border-radius:var(--radius-m); border:1px solid var(--line); box-shadow:var(--shadow-sm); }
+.admin-header{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+.admin-header h2{ font-size:1.3rem; }
+.form-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:12px; }
+.form-panel{ background:var(--paper); padding:16px; border-radius:var(--radius-s); margin-bottom:22px; display:flex; flex-direction:column; gap:10px; }
+.section-label{ margin-bottom:12px; border-bottom:2px solid var(--coral); display:inline-block; padding-bottom:4px; font-size:1.05rem; font-weight:600; }
+.admin-table{ width:100%; border-collapse:collapse; text-align:left; }
+.admin-table th, .admin-table td{ padding:11px 10px; border-bottom:1px solid var(--line); font-size:.85rem; }
+.admin-table th{ background:var(--paper); color:var(--ink); font-weight:600; }
+.action-icon{ cursor:pointer; margin-right:10px; font-size:.95rem; border:none; background:none; }
+.action-icon.edit{ color:#3498db; } .action-icon.delete{ color:var(--danger); }
+
+/* ==========================================================================
+   11. FOOTER
+   ========================================================================== */
+/* ==========================================================================
+   12b. PÁGINA DE CONFIRMAÇÃO DE PEDIDO
+   ========================================================================== */
+.obrigado-box{ max-width:420px; margin:60px auto; background:var(--card); border:1px solid var(--line); border-radius:var(--radius-l); box-shadow:var(--shadow-md); padding:44px 30px; text-align:center; }
+.obrigado-box i{ font-size:3rem; margin-bottom:16px; display:block; }
+.obrigado-box h2{ font-size:1.4rem; margin-bottom:10px; }
+.obrigado-box p{ color:var(--ink-soft); font-size:.9rem; line-height:1.6; margin-bottom:24px; }
+
+footer{ background:var(--card); padding:36px 5%; border-top:1px solid var(--line); text-align:center; }
+.footer-content{ max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:16px; align-items:center; }
+.footer-about{ font-size:.9rem; color:var(--ink-soft); line-height:1.6; }
+.footer-socials{ display:flex; gap:10px; width:100%; justify-content:center; flex-wrap:wrap; }
+.btn-social{ padding:12px 20px; border-radius:12px; color:#fff; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:8px; font-size:.9rem; transition:transform .15s; }
+.btn-social:hover{ transform:translateY(-2px); }
+.btn-social.whatsapp{ background:var(--whats); } .btn-social.instagram{ background:var(--insta); }
+.footer-email{ color:var(--coral); text-decoration:none; font-weight:500; font-size:.9rem; }
+
+#wallet_container{ margin-top:14px; width:100%; display:none; }
+
+/* ==========================================================================
+   12. RESPONSIVO
+   ========================================================================== */
+@media (max-width:768px){
+  .promo-bar{ position:relative; }
+  header{ padding:10px 4%; display:flex; justify-content:space-between; top:0; }
+  .header-left{ display:none; } .logo{ margin:0; } .logo h1{ font-size:1.25rem; }
+  .hero{ padding:36px 6% 30px; }
+  .products-grid{ grid-template-columns:repeat(2,1fr); gap:12px; }
+  .product-details h4{ font-size:.82rem; min-height:34px; }
+  .field-grid-2{ grid-template-columns:1fr; }
+  .form-row{ grid-template-columns:1fr; gap:8px; }
+  .cat-container{ justify-content:flex-start; }
+  .footer-socials{ flex-direction:column; align-items:center; }
+  .btn-social{ width:100%; max-width:280px; justify-content:center; }
+  .admin-container{ overflow-x:auto; padding:15px; }
+  .admin-table{ width:600px; }
+  .modal-img{ height:200px; }
+  .checkout-grid{ grid-template-columns:1fr; }
+  .cart-sidebar{ max-width:100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="promo-bar">✨ Espalhando muito amor através de nossos produtos! ✨</div>
+
+<div id="toast" class="toast-notification">
+  <i class="fa-solid fa-circle-check" style="color:var(--mint); font-size:1.1rem;"></i>
+  <span id="toast-text">Item adicionado à sacola!</span>
+</div>
+
+<!-- Modal de produto -->
+<div id="product-modal" class="modal-overlay" onclick="closeProductModal(event)">
+  <div class="modal-container">
+    <button type="button" class="modal-close" onclick="document.getElementById('product-modal').style.display='none'"><i class="fa-solid fa-xmark"></i></button>
+    <img id="modal-product-img" class="modal-img" src="" alt="">
+    <div class="modal-body">
+      <div class="cat-label" id="modal-product-cat"></div>
+      <h2 id="modal-product-title" class="modal-title"></h2>
+      <div id="modal-product-price" class="modal-price"></div>
+      <p id="modal-product-desc" class="modal-desc"></p>
+      <div id="modal-product-action"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="header-left"></div>
+  <a href="#" class="logo" onclick="showPage('page-loja')">
+    <h1>DulceRecordatio</h1>
+    <div class="logo-icons">
+      <i class="fa-solid fa-camera"></i>
+      <i class="fa-solid fa-heart"></i>
+    </div>
+  </a>
+  <div class="header-right">
+    <button type="button" class="btn btn-cart" onclick="toggleCart()" aria-label="Abrir sacola">
+      <i class="fa-solid fa-basket-shopping"></i>
+      <span id="cart-badge" class="cart-badge">0</span>
+    </button>
+    <button type="button" id="nav-admin" class="btn btn-admin" style="display:none" onclick="showPage('page-admin')"><i class="fa-solid fa-gear"></i></button>
+    <button type="button" id="nav-login" class="btn btn-login" onclick="showPage('page-auth')"><i class="fa-solid fa-user"></i></button>
+  </div>
+</header>
+
+<main class="content">
+  <section id="page-loja" class="page active-page">
+
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow"><i class="fa-solid fa-heart"></i> Papelaria afetiva & escolar</div>
+        <h2>Cada página guarda uma <em>lembrança</em>.</h2>
+        <p>Agendas, planners, cadernetas de vacina e quadros feitos pra registrar os momentos que valem a pena guardar — com carinho, do jeitinho DulceRecordatio.</p>
+        <div class="hero-ctas">
+          <button type="button" class="btn btn-primary" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-basket-shopping"></i> Ver produtos</button>
+          <a href="https://wa.me/5524993346056" target="_blank" class="btn" style="background:var(--coral-soft); color:var(--coral);"><i class="fa-brands fa-whatsapp"></i> Falar com a gente</a>
+        </div>
+        <div class="hero-tags">
+          <span class="hero-tag">📦 Envio para todo o Brasil</span>
+          <span class="hero-tag">🎀 Feito com carinho</span>
+          <span class="hero-tag">💳 Pix ou cartão</span>
+        </div>
+      </div>
+    </div>
+    <div class="torn-edge"></div>
+
+    <div id="shop-anchor" style="padding-top:26px;">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="shop-search" placeholder="Procurar lembrança especial..." onkeyup="renderShop()">
+      </div>
+
+      <div class="cat-container">
+        <div class="cat-card active" onclick="filterCat('todos', this)">Todos os produtos</div>
+        <div class="cat-card" onclick="filterCat('encadernacao', this)">Agendas & Cadernetas</div>
+        <div class="cat-card" onclick="filterCat('decoracao', this)">Quadros & Fotografias</div>
+      </div>
+
+      <div id="shop-container" class="products-grid"></div>
+    </div>
+  </section>
+
+  <!-- Checkout -->
+  <section id="page-checkout" class="page">
+    <div class="checkout-steps">
+      <div class="step-item done"><span class="step-circle"><i class="fa-solid fa-check"></i></span>Sacola</div>
+      <div class="step-line"></div>
+      <div class="step-item active" id="step-entrega"><span class="step-circle">2</span>Entrega</div>
+      <div class="step-line"></div>
+      <div class="step-item" id="step-pagamento"><span class="step-circle">3</span>Pagamento</div>
+    </div>
+    <div class="section-heading" style="margin-top:6px;"><h3>Finalizar pedido</h3></div>
+    <div class="checkout-grid">
+      <div class="checkout-box">
+        <h2><i class="fa-solid fa-truck-fast" style="color:var(--coral)"></i> Endereço de entrega</h2>
+        <div class="field-grid-2">
+          <input type="text" class="input-field" id="chk-nome" placeholder="Nome completo do destinatário">
+          <input type="text" class="input-field" id="chk-tel" placeholder="WhatsApp para avisos">
+        </div>
+        <input type="text" class="input-field" id="chk-rua" placeholder="Rua, número e complemento">
+        <div class="field-grid-2">
+          <input type="text" class="input-field" id="chk-bairro" placeholder="Bairro">
+          <input type="text" class="input-field" id="chk-cidade" placeholder="Cidade / Estado" readonly style="background:var(--line); cursor:not-allowed;">
+        </div>
+        <div class="secure-note">🔒 <b>Ambiente seguro:</b> seus dados são processados via Mercado Pago com criptografia SSL, para Pix ou cartão.</div>
+      </div>
+
+      <div class="checkout-box" style="height:fit-content;">
+        <h2>Resumo do pedido</h2>
+        <div id="checkout-summary-items" style="border-bottom:1px dashed var(--line); padding-bottom:6px;"></div>
+        <div class="summary-row"><span>Subtotal</span><span id="chk-subtotal">R$ 0,00</span></div>
+        <div class="summary-row"><span>Frete</span><span id="chk-shipping">R$ 0,00</span></div>
+        <div class="summary-row" style="color:var(--danger)"><span>Desconto</span><span id="chk-discount">- R$ 0,00</span></div>
+        <div class="summary-row total"><span>Total</span><span id="chk-total">R$ 0,00</span></div>
+
+        <div class="trust-badges">
+          <span class="trust-badge"><i class="fa-solid fa-lock"></i> Compra segura</span>
+          <span class="trust-badge"><i class="fa-solid fa-qrcode"></i> Pix ou cartão</span>
+          <span class="trust-badge"><i class="fa-solid fa-box"></i> Envio rastreado</span>
+        </div>
+
+        <button type="button" id="btn-processar-pagamento" class="btn btn-primary btn-block" style="margin-top:6px;" onclick="gerarPreferenciaCheckoutPro()"><i class="fa-solid fa-shield-halved"></i> Pagar com Mercado Pago</button>
+        <div id="wallet_container"></div>
+        <button type="button" class="btn btn-ghost btn-block" onclick="showPage('page-loja')">Voltar e alterar sacola</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Confirmação de pedido (retorno do Mercado Pago) -->
+  <section id="page-obrigado" class="page">
+    <div class="obrigado-box">
+      <i id="obrigado-icon" class="fa-solid fa-circle-check" style="color:var(--mint-deep);"></i>
+      <h2 id="obrigado-titulo">Pedido confirmado!</h2>
+      <p id="obrigado-texto">Recebemos seu pagamento e já vamos preparar tudo com muito carinho. Você vai receber novidades pelo WhatsApp.</p>
+      <button type="button" class="btn btn-primary" onclick="showPage('page-loja')"><i class="fa-solid fa-basket-shopping"></i> Voltar para a loja</button>
+    </div>
+  </section>
+
+  <!-- Admin -->
+  <section id="page-admin" class="page">
+    <div class="admin-container">
+      <div class="admin-header">
+        <h2>Painel administrativo</h2>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn" style="background:var(--danger); color:#fff; flex:1;" onclick="handleLogout()">Sair</button>
+          <button type="button" class="btn btn-ghost" style="flex:1;" onclick="showPage('page-loja')">Ver loja</button>
+        </div>
+      </div>
+
+      <h3 class="section-label">Pedidos</h3>
+      <div style="overflow-x:auto; margin-bottom:22px;">
+        <table class="admin-table">
+          <thead><tr><th>Cliente</th><th>Endereço</th><th>Itens</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="admin-pedidos-list">
+            <tr><td colspan="6" style="text-align:center; color:var(--muted); padding:20px;">Carregando pedidos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="section-label">Produtos</h3>
+      <div class="form-panel">
+        <input type="hidden" id="form-id">
+        <input type="text" id="form-nome" class="input-field" placeholder="Nome do produto">
+        <div class="form-row">
+          <select id="form-cat" class="input-field">
+            <option value="encadernacao">Agendas & Cadernetas</option>
+            <option value="decoracao">Quadros & Fotografias</option>
+          </select>
+          <input type="number" step="0.01" id="form-preco" class="input-field" placeholder="Preço R$">
+          <input type="number" id="form-estoque" class="input-field" placeholder="Estoque">
+        </div>
+        <input type="text" id="form-desc" class="input-field" placeholder="Descrição curta">
+        <input type="text" id="form-img" class="input-field" placeholder="URL da imagem">
+        <button type="button" class="btn btn-primary" onclick="saveProduct()">Salvar produto</button>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr></thead>
+          <tbody id="admin-products-list"></tbody>
+        </table>
+      </div>
+
+      <br>
+      <h3 class="section-label">Cupons</h3>
+      <div class="form-panel">
+        <input type="hidden" id="coupon-id">
+        <div class="form-row">
+          <input type="text" id="coupon-code" class="input-field" placeholder="Código do cupom">
+          <input type="number" id="coupon-discount" class="input-field" placeholder="Desconto (%)">
+          <button type="button" class="btn btn-primary" onclick="saveCoupon()">Salvar cupom</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead><tr><th>Código</th><th>Desconto</th><th>Ações</th></tr></thead>
+          <tbody id="admin-coupons-list"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login -->
+  <section id="page-auth" class="page">
+    <div class="admin-container" style="max-width:400px; text-align:center;">
+      <h2>Acesso restrito</h2>
+      <p style="font-size:.85rem; color:var(--muted); margin-top:8px;">Área exclusiva da equipe DulceRecordatio.</p>
+      <input type="email" id="login-user" class="input-field" placeholder="E-mail" style="margin:20px 0 10px;">
+      <input type="password" id="login-pass" class="input-field" placeholder="Senha" style="margin-bottom:20px;">
+      <button type="button" class="btn btn-primary btn-block" onclick="handleLogin()">Entrar</button>
+    </div>
+  </section>
+</main>
+
+<!-- Carrinho -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<aside class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-head">
+    <h2>Sua sacola</h2>
+    <button type="button" class="icon-btn" onclick="toggleCart()" aria-label="Fechar sacola"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div id="cart-items-list" style="flex-grow:1; overflow-y:auto;"></div>
+
+  <div class="cart-block">
+    <div class="block-title"><i class="fa-solid fa-truck-ramp-box"></i> Calcular frete</div>
+    <div class="inline-form">
+      <input type="text" id="cart-cep-input" class="input-field" placeholder="Digite seu CEP" maxlength="8">
+      <button type="button" class="btn" style="background:var(--ink); color:#fff;" onclick="consultarCepReal()">Calcular</button>
+    </div>
+    <div id="cep-info-text" style="font-size:.75rem; color:var(--muted); margin-top:6px; font-weight:500;"></div>
+    <div id="shipping-options" class="shipping-options">
+      <label><span><input type="radio" name="shipping-choice" id="rad-pac" checked onclick="selectShippingReal('pac')"> Correios PAC</span><b style="color:var(--coral);" id="price-pac">R$ 0,00</b></label>
+      <label><span><input type="radio" name="shipping-choice" id="rad-sedex" onclick="selectShippingReal('sedex')"> Correios SEDEX</span><b style="color:var(--coral);" id="price-sedex">R$ 0,00</b></label>
+    </div>
+  </div>
+
+  <div class="cart-block">
+    <div class="inline-form">
+      <input type="text" id="cart-coupon-input" class="input-field" placeholder="Cupom de desconto">
+      <button type="button" class="btn" style="background:var(--ink); color:#fff;" onclick="applyCoupon()">Aplicar</button>
+    </div>
+    <div id="coupon-message" style="font-size:.75rem; margin-top:6px;"></div>
+  </div>
+
+  <div class="cart-block" style="border-bottom:none; padding-bottom:0;">
+    <div class="summary-row"><span>Subtotal</span><span id="cart-subtotal">R$ 0,00</span></div>
+    <div class="summary-row"><span>Frete</span><span id="cart-shipping">R$ 0,00</span></div>
+    <div class="summary-row" style="color:var(--danger)"><span>Desconto</span><span id="cart-discount">- R$ 0,00</span></div>
+    <div class="summary-row total"><span>Total</span><span id="cart-total">R$ 0,00</span></div>
+    <button type="button" class="btn btn-primary btn-block" style="margin-top:6px;" onclick="goToCheckout()"><i class="fa-solid fa-lock"></i> Ir para o endereço</button>
+  </div>
+</aside>
+
+<footer>
+  <div class="footer-content">
+    <p class="footer-about">Espalhando muito amor através de nossos produtos! Trabalhamos com agendas, planners, cadernetas de vacina, calendários e micro-artigos.</p>
+    <div class="footer-socials">
+      <a href="https://wa.me/5524993346056" target="_blank" class="btn-social whatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+      <a href="https://www.instagram.com/dulcerecordation" target="_blank" class="btn-social instagram"><i class="fa-brands fa-instagram"></i> Instagram</a>
+    </div>
+    <a href="mailto:dulcerecordatio@gmail.com" class="footer-email">dulcerecordatio@gmail.com</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ==========================================================================
+   CONFIGURAÇÃO
+   ========================================================================== */
+// Substitua pela URL da sua database no Neon (disponível no painel do Neon em "Connection Details > HTTP API" ou usando a URL do endpoint)
+const NEON_DATABASE_URL = "postgresql://neondb_owner:npg_Yoe5qhnt1ERw@ep-still-night-acjif3dx-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+
+// Função para executar SQL no Neon via HTTP API
+async function neonQuery(sql, params = []) {
+    const response = await fetch("https://api.neon.tech/v1/sql", { // ou o endpoint Serverless do seu projeto no Neon
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer SUA_NEON_API_KEY`
+        },
+        body: JSON.stringify({ query: sql, params })
+    });
+    return await response.json();
+}
+
+// Exemplo de como carregar os produtos:
+async function fetchProductsFromNeon() {
+    try {
+        const result = await neonQuery("SELECT * FROM produtos ORDER BY id DESC;");
+        products = result.rows || [];
+        renderShop();
+        renderAdminProducts();
+    } catch (err) {
+        console.error("Erro ao buscar produtos no Neon:", err);
+    }
+}
+function toggleCart() {
+  document.getElementById('cart-sidebar').classList.toggle('open');
+  const overlay = document.getElementById('cart-overlay');
+  overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+}
+
+function addToCart(id) {
+  const item = state.products.find(p => p.id === id);
+  if (!item) return;
+  const estoque = Number(item.estoque) || 0;
+  const inCart = state.cart.find(c => c.id === id);
+  const qtyAtual = inCart ? inCart.qty : 0;
+
+  if (estoque > 0 && qtyAtual >= estoque) {
+    showToast('Sem mais estoque disponível para este item.', true);
+    return;
+  }
+  if (inCart) inCart.qty++;
+  else state.cart.push({ ...item, qty: 1 });
+
+  updateCart();
+  showToast('Item adicionado à sacola!');
+}
+
+function removeFromCart(id) { state.cart = state.cart.filter(c => c.id !== id); updateCart(); }
+
+function showToast(msg, isError = false) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-text').innerText = msg;
+  toast.style.borderLeftColor = isError ? 'var(--danger)' : 'var(--mint)';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+async function consultarCepReal() {
+  const cep = document.getElementById('cart-cep-input').value.replace(/\D/g, '');
+  const infoText = document.getElementById('cep-info-text');
+  if (cep.length !== 8) { showToast('CEP inválido.', true); return; }
+
+  infoText.innerText = "Consultando CEP...";
+  try {
+    const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const data = await response.json();
+    if (data.erro) { infoText.innerText = "CEP não encontrado."; return; }
+
+    state.localidadeCliente = `${data.logradouro ? data.logradouro + ', ' : ''}${data.bairro ? data.bairro + ' - ' : ''}${data.localidade}/${data.uf}`;
+    infoText.innerText = `📦 Enviar para: ${data.localidade} - ${data.uf}`;
+
+    const tabela = FRETE_POR_UF[data.uf.toUpperCase()] || FRETE_POR_UF._default;
+    state.fretePac = tabela.pac;
+    state.freteSedex = tabela.sedex;
+
+    document.getElementById('price-pac').innerText = `R$ ${state.fretePac.toFixed(2)}`;
+    document.getElementById('price-sedex').innerText = `R$ ${state.freteSedex.toFixed(2)}`;
+    document.getElementById('shipping-options').style.display = "flex";
+    document.getElementById('rad-pac').checked = true;
+    state.shippingCost = state.fretePac;
+    updateCart();
+  } catch (err) {
+    infoText.innerText = "Erro ao buscar frete. Tente novamente.";
+  }
+}
+
+function selectShippingReal(type) {
+  state.shippingCost = (type === 'pac') ? state.fretePac : state.freteSedex;
+  updateCart();
+}
+
+function applyCoupon() {
+  const code = document.getElementById('cart-coupon-input').value.trim().toUpperCase();
+  const found = state.coupons.find(c => c.code === code);
+  const msgEl = document.getElementById('coupon-message');
+
+  if (found) {
+    state.activeCoupon = found;
+    msgEl.style.color = "var(--mint-deep)";
+    msgEl.innerText = `Cupom ${found.code} (${found.discount}%) aplicado!`;
+  } else {
+    state.activeCoupon = null;
+    msgEl.style.color = "var(--danger)";
+    msgEl.innerText = "Cupom inválido ou expirado.";
+  }
+  updateCart();
+}
+
+function updateCart() {
+  const list = document.getElementById('cart-items-list');
+  let subtotal = 0, count = 0;
+
+  if (state.cart.length === 0) {
+    list.innerHTML = `<div class="cart-empty"><i class="fa-solid fa-basket-shopping"></i>Sua sacola está vazia.</div>`;
+  } else {
+    list.innerHTML = state.cart.map(item => {
+      subtotal += item.preco * item.qty;
+      count += item.qty;
+      return `
+        <div class="cart-line">
+          <div><b>${item.nome}</b><br><small>${item.qty}x R$ ${parseFloat(item.preco).toFixed(2)}</small></div>
+          <button onclick="removeFromCart(${item.id})" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;" aria-label="Remover item"><i class="fa-solid fa-trash"></i></button>
+        </div>`;
+    }).join('');
+  }
+
+  const discountValue = state.activeCoupon ? (subtotal * (state.activeCoupon.discount / 100)) : 0;
+  state.totalGeral = subtotal + state.shippingCost - discountValue;
+
+  document.getElementById('cart-subtotal').innerText = `R$ ${subtotal.toFixed(2)}`;
+  document.getElementById('cart-shipping').innerText = `R$ ${state.shippingCost.toFixed(2)}`;
+  document.getElementById('cart-discount').innerText = `- R$ ${discountValue.toFixed(2)}`;
+  document.getElementById('cart-total').innerText = `R$ ${state.totalGeral.toFixed(2)}`;
+  document.getElementById('cart-badge').innerText = count;
+}
+
+/* ==========================================================================
+   CHECKOUT
+   ========================================================================== */
+function goToCheckout() {
+  if (state.cart.length === 0) return showToast('Sua sacola está vazia!', true);
+  if (state.shippingCost === 0) return showToast('Calcule o frete primeiro!', true);
+
+  toggleCart();
+  showPage('page-checkout');
+  document.getElementById('chk-cidade').value = state.localidadeCliente;
+
+  // Reseta o indicador de progresso ao entrar na tela (caso o cliente volte e edite a sacola)
+  document.getElementById('step-entrega').className = 'step-item active';
+  document.getElementById('step-entrega').innerHTML = '<span class="step-circle">2</span>Entrega';
+  document.getElementById('step-pagamento').className = 'step-item';
+  document.getElementById('wallet_container').style.display = 'none';
+  document.getElementById('wallet_container').innerHTML = '';
+  document.getElementById('btn-processar-pagamento').style.display = 'flex';
+
+  let subtotal = 0;
+  document.getElementById('checkout-summary-items').innerHTML = state.cart.map(c => {
+    subtotal += c.preco * c.qty;
+    return `
+      <div class="summary-item">
+        <img src="${c.img || 'https://via.placeholder.com/60'}" alt="${c.nome}">
+        <div class="summary-item-info"><b>${c.nome}</b><small>${c.qty}x R$ ${parseFloat(c.preco).toFixed(2)}</small></div>
+      </div>`;
+  }).join('');
+
+  const discountValue = state.activeCoupon ? (subtotal * (state.activeCoupon.discount / 100)) : 0;
+  document.getElementById('chk-subtotal').innerText = `R$ ${subtotal.toFixed(2)}`;
+  document.getElementById('chk-shipping').innerText = `R$ ${state.shippingCost.toFixed(2)}`;
+  document.getElementById('chk-discount').innerText = `- R$ ${discountValue.toFixed(2)}`;
+  document.getElementById('chk-total').innerText = `R$ ${state.totalGeral.toFixed(2)}`;
+}
+
+async function gerarPreferenciaCheckoutPro() {
+  const nome = document.getElementById('chk-nome').value.trim();
+  const tel = document.getElementById('chk-tel').value.trim();
+  const rua = document.getElementById('chk-rua').value.trim();
+  const bairro = document.getElementById('chk-bairro').value.trim();
+  if (!nome || !tel || !rua) return showToast('Preencha nome, WhatsApp e endereço.', true);
+
+  const btn = document.getElementById('btn-processar-pagamento');
+  const textoOriginal = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gerando checkout seguro...';
+  btn.disabled = true;
+
+  // Itens no formato simples -- é a Edge Function que monta o payload
+  // que a API do Mercado Pago espera, e que também salva o pedido no banco.
+  const itensPedido = state.cart.map(item => ({ nome: item.nome, qty: item.qty, preco: item.preco }));
+  let subtotal = 0;
+  state.cart.forEach(i => subtotal += i.preco * i.qty);
+  const desconto = state.activeCoupon ? (subtotal * (state.activeCoupon.discount / 100)) : 0;
+
+  try {
+    // Essa Edge Function: 1) salva o pedido como "aguardando_pagamento"
+    // com o endereço completo, e 2) cria a preferência no Mercado Pago.
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/criar-pedido-preferencia`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        itens: itensPedido,
+        cliente: { nome, telefone: tel },
+        endereco: { rua, bairro, cidade: state.localidadeCliente },
+        subtotal, frete: state.shippingCost, desconto, total: state.totalGeral
+      })
+    });
+    const data = await response.json();
+    if (!data.preferenceId) throw new Error('Preferência não retornada');
+
+    btn.style.display = 'none';
+    document.getElementById('wallet_container').style.display = 'block';
+    mp.bricks().create("wallet", "wallet_container", {
+      initialization: { preferenceId: data.preferenceId },
+      customization: { texts: { valueProp: 'smart_option' } }
+    });
+
+    // Avança o indicador visual de progresso para "Pagamento"
+    document.getElementById('step-entrega').className = 'step-item done';
+    document.getElementById('step-entrega').innerHTML = '<span class="step-circle"><i class="fa-solid fa-check"></i></span>Entrega';
+    document.getElementById('step-pagamento').className = 'step-item active';
+  } catch (error) {
+    console.error(error);
+    showToast('Redirecionando para o checkout seguro...');
+    window.location.href = LINK_MERCADO_PAGO_ESTATICO_BACKUP;
+  } finally {
+    btn.innerHTML = textoOriginal;
+    btn.disabled = false;
+  }
+}
+
+/* ==========================================================================
+   ADMIN — PRODUTOS
+   ========================================================================== */
+function renderAdminProducts() {
+  const list = document.getElementById('admin-products-list');
+  list.innerHTML = state.products.map(p => `
+    <tr>
+      <td><b>${p.nome}</b></td>
+      <td>${CATEGORY_LABELS[p.cat] || p.cat}</td>
+      <td>R$ ${parseFloat(p.preco).toFixed(2)}</td>
+      <td>${p.estoque ?? 0}</td>
+      <td>
+        <button class="action-icon edit" onclick="editProduct(${p.id})" aria-label="Editar"><i class="fa-solid fa-pen"></i></button>
+        <button class="action-icon delete" onclick="deleteProduct(${p.id})" aria-label="Excluir"><i class="fa-solid fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+async function saveProduct() {
+  const id = document.getElementById('form-id').value;
+  const nome = document.getElementById('form-nome').value.trim();
+  const cat = document.getElementById('form-cat').value;
+  const preco = parseFloat(document.getElementById('form-preco').value);
+  const estoque = parseInt(document.getElementById('form-estoque').value) || 0;
+  const desc_curta = document.getElementById('form-desc').value.trim();
+  const img = document.getElementById('form-img').value.trim();
+
+  if (!nome || !preco) return showToast('Preencha nome e preço.', true);
+  const obj = { nome, cat, preco, estoque, desc_curta, img };
+
+  const { error } = id
+    ? await db.from('produtos').update(obj).eq('id', id)
+    : await db.from('produtos').insert([obj]);
+
+  if (error) return showToast('Erro ao salvar: ' + error.message, true);
+
+  showToast('Produto salvo com sucesso!');
+  document.getElementById('form-id').value = '';
+  ['form-nome', 'form-preco', 'form-estoque', 'form-desc', 'form-img'].forEach(id => document.getElementById(id).value = '');
+  await fetchProducts();
+}
+
+function editProduct(id) {
+  const p = state.products.find(prod => prod.id === id);
+  if (!p) return;
+  document.getElementById('form-id').value = p.id;
+  document.getElementById('form-nome').value = p.nome;
+  document.getElementById('form-cat').value = p.cat;
+  document.getElementById('form-preco').value = p.preco;
+  document.getElementById('form-estoque').value = p.estoque;
+  document.getElementById('form-desc').value = p.desc_curta;
+  document.getElementById('form-img').value = p.img;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function deleteProduct(id) {
+  if (!confirm("Deletar este produto?")) return;
+  const { error } = await db.from('produtos').delete().eq('id', id);
+  if (error) return showToast('Erro ao excluir: ' + error.message, true);
+  showToast('Produto excluído.');
+  await fetchProducts();
+}
+
+/* ==========================================================================
+   ADMIN — CUPONS
+   ========================================================================== */
+function renderAdminCoupons() {
+  const list = document.getElementById('admin-coupons-list');
+  list.innerHTML = state.coupons.map(c => `
+    <tr>
+      <td><b>${c.code}</b></td>
+      <td>${c.discount}%</td>
+      <td>
+        <button class="action-icon edit" onclick="editCoupon(${c.id})" aria-label="Editar"><i class="fa-solid fa-pen"></i></button>
+        <button class="action-icon delete" onclick="deleteCoupon(${c.id})" aria-label="Excluir"><i class="fa-solid fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+async function saveCoupon() {
+  const id = document.getElementById('coupon-id').value;
+  const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+  const discount = parseInt(document.getElementById('coupon-discount').value);
+  if (!code || !discount) return showToast('Preencha código e desconto.', true);
+  const obj = { code, discount };
+
+  const { error } = id
+    ? await db.from('cupons').update(obj).eq('id', id)
+    : await db.from('cupons').insert([obj]);
+
+  if (error) return showToast('Erro ao salvar: ' + error.message, true);
+  showToast('Cupom salvo!');
+  document.getElementById('coupon-id').value = '';
+  document.getElementById('coupon-code').value = '';
+  document.getElementById('coupon-discount').value = '';
+  await fetchCoupons();
+}
+
+function editCoupon(id) {
+  const c = state.coupons.find(coup => coup.id === id);
+  if (!c) return;
+  document.getElementById('coupon-id').value = c.id;
+  document.getElementById('coupon-code').value = c.code;
+  document.getElementById('coupon-discount').value = c.discount;
+}
+
+async function deleteCoupon(id) {
+  if (!confirm("Deletar este cupom?")) return;
+  const { error } = await db.from('cupons').delete().eq('id', id);
+  if (error) return showToast('Erro ao excluir: ' + error.message, true);
+  showToast('Cupom excluído.');
+  await fetchCoupons();
+}
+
+/* ==========================================================================
+   ADMIN — PEDIDOS
+   Observação: esta tabela só terá RLS liberando leitura para o painel depois
+   que o login de admin virar Supabase Auth de verdade (ver TODO no topo).
+   Até lá, esta seção pode aparecer vazia ou dar erro de permissão -- é
+   esperado e intencional, para não expor dados de clientes sem autenticação.
+   ========================================================================== */
+const STATUS_LABELS = {
+  aguardando_pagamento: { texto: 'Aguardando pagamento', cor: 'var(--muted)' },
+  pago: { texto: 'Pago', cor: 'var(--mint-deep)' },
+  enviado: { texto: 'Enviado', cor: '#3498db' },
+  cancelado: { texto: 'Cancelado', cor: 'var(--danger)' }
+};
+
+async function fetchPedidos() {
+  const { data, error } = await db.from('pedidos').select('*').order('id', { ascending: false });
+  if (error) {
+    document.getElementById('admin-pedidos-list').innerHTML =
+      `<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:20px;">Ainda sem acesso aos pedidos (falta configurar login de admin real). Fale com o desenvolvedor.</td></tr>`;
+    return;
+  }
+  state.pedidos = data || [];
+  renderAdminPedidos();
+}
+
+function renderAdminPedidos() {
+  const list = document.getElementById('admin-pedidos-list');
+  if (!state.pedidos || state.pedidos.length === 0) {
+    list.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:20px;">Nenhum pedido ainda.</td></tr>`;
+    return;
+  }
+  list.innerHTML = state.pedidos.map(p => {
+    const st = STATUS_LABELS[p.status] || { texto: p.status, cor: 'var(--muted)' };
+    const itensTexto = (p.itens || []).map(i => `${i.qty}x ${i.nome}`).join(', ');
+    const endereco = `${p.endereco_rua}${p.endereco_bairro ? ', ' + p.endereco_bairro : ''}${p.endereco_cidade ? ' — ' + p.endereco_cidade : ''}`;
+    return `
+      <tr>
+        <td><b>${p.cliente_nome}</b><br><small>${p.cliente_telefone}</small></td>
+        <td style="font-size:.8rem;">${endereco}</td>
+        <td style="font-size:.8rem;">${itensTexto}</td>
+        <td>R$ ${parseFloat(p.total).toFixed(2)}</td>
+        <td><span style="color:${st.cor}; font-weight:600; font-size:.8rem;">${st.texto}</span></td>
+        <td>
+          ${p.status === 'pago' ? `<button class="btn" style="background:var(--mint); color:#fff; font-size:.75rem; padding:6px 10px;" onclick="marcarComoEnviado(${p.id}, '${p.cliente_telefone}', '${p.cliente_nome.replace(/'/g, "")}')">Marcar enviado</button>` : ''}
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+async function marcarComoEnviado(pedidoId, telefone, nome) {
+  const { error } = await db.from('pedidos').update({ status: 'enviado' }).eq('id', pedidoId);
+  if (error) return showToast('Erro ao atualizar: ' + error.message, true);
+  showToast('Pedido marcado como enviado!');
+  await fetchPedidos();
+  if (confirm(`Avisar ${nome} pelo WhatsApp que o pedido foi enviado?`)) {
+    dispararWhatsEnvio(telefone, nome);
+  }
+}
+
+function dispararWhatsEnvio(celular, nome) {
+  const msg = `Olá ${nome}, tudo bem? Seu pedido na DulceRecordatio já foi postado nos Correios e está a caminho! 💌`;
+  window.open(`https://api.whatsapp.com/send?phone=${celular.replace(/\D/g, '')}&text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+
+/* ==========================================================================
+   AUTENTICAÇÃO — via Supabase Auth (Authentication > Users no painel)
+   ========================================================================== */
+function handleLogin() {
+    const user = document.getElementById('login-user').value;
+    const pass = document.getElementById('login-pass').value;
+
+    if (user === "admin" && pass === "admin123") {
+        localStorage.setItem('dulce_session', 'true'); 
+        checkAdminNav(); 
+        showPage('page-admin');
+    } else {
+        alert("Acesso Negado: usuário ou senha incorretos.");
+    }
+}
+</script>
+</body>
