@@ -290,6 +290,37 @@ async function excluirCupom(id) {
   }
 }
 
+/* ---------------------- Minha conta ---------------------- */
+async function salvarConta() {
+  const novo_login = $('#conta-login').value.trim();
+  const nova_senha = $('#conta-senha-nova').value;
+  const senha_atual = $('#conta-senha-atual').value;
+  const msg = $('#conta-msg');
+
+  if (!senha_atual) return toast('Informe a senha atual para confirmar.', 'aviso');
+  if (!novo_login && !nova_senha) return toast('Preencha o novo login ou a nova senha.', 'aviso');
+
+  try {
+    const r = await api.admin.atualizarConta({ novo_login: novo_login || undefined, nova_senha: nova_senha || undefined, senha_atual });
+    $('#conta-login').value = '';
+    $('#conta-senha-nova').value = '';
+    $('#conta-senha-atual').value = '';
+    msg.className = 'hint';
+
+    if (r.relogar) {
+      toast('Login atualizado! Entre novamente.');
+      alternarNavAdmin(false);
+      location.hash = '#/entrar';
+    } else {
+      toast('Dados da conta atualizados!');
+    }
+  } catch (erro) {
+    msg.className = 'hint err';
+    msg.textContent = erro.message;
+    toast(erro.message, 'erro');
+  }
+}
+
 /* ==================================================================
    EVENTOS (registrados uma única vez)
 ================================================================== */
@@ -298,6 +329,7 @@ export function configurarAdmin() {
   $('#btn-salvar-produto').addEventListener('click', salvarProduto);
   $('#btn-cancelar-produto').addEventListener('click', limparFormularioProduto);
   $('#btn-salvar-cupom').addEventListener('click', salvarCupom);
+  $('#btn-salvar-conta').addEventListener('click', salvarConta);
 
   $('#filtros-pedidos').addEventListener('click', (evento) => {
     const botao = evento.target.closest('[data-status]');

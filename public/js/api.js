@@ -56,5 +56,7 @@ export const api = {
 
     pedidos:         (status = '') => pedir(`/api/admin/pedidos${status ? `?status=${status}` : ''}`),
     mudarStatus:     (id, status)  => pedir(`/api/admin/pedidos/${id}/status`, { metodo: 'PATCH', corpo: { status } }),
+
+    atualizarConta:  (corpo)       => pedir('/api/admin/conta', { metodo: 'PUT', corpo }),
   },
 };

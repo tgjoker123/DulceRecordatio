@@ -11,13 +11,13 @@ rotasAuth.post('/login', rota(async (req, res) => {
   const ip = req.ip;
   checarTentativas(ip);
 
-  const email = texto(req.body?.email, 'e-mail', { max: 160 }).toLowerCase();
+  const email = texto(req.body?.email, 'login', { max: 160 }).toLowerCase();
   const senha = texto(req.body?.senha, 'senha', { max: 200 });
 
   const admin = await autenticar(email, senha);
   if (!admin) {
     registrarFalha(ip);
-    return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
+    return res.status(401).json({ erro: 'Login ou senha incorretos.' });
   }
 
   limparTentativas(ip);

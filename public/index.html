@@ -165,7 +165,7 @@
       <h2>Acesso restrito</h2>
       <p style="font-size:.85rem; color:var(--muted); margin-top:8px;">Área exclusiva da equipe DulceRecordatio.</p>
       <form id="form-login" style="margin-top:20px; display:flex; flex-direction:column; gap:12px;">
-        <input type="email" id="login-user" class="input-field" placeholder="E-mail" autocomplete="username" required>
+        <input type="text" id="login-user" class="input-field" placeholder="Login" autocomplete="username" required>
         <input type="password" id="login-pass" class="input-field" placeholder="Senha" autocomplete="current-password" required>
         <button type="submit" class="btn btn-primary btn-block">Entrar</button>
       </form>
@@ -254,6 +254,20 @@
           <thead><tr><th>Código</th><th>Desconto</th><th>Mínimo</th><th>Usos</th><th>Status</th><th>Ações</th></tr></thead>
           <tbody id="admin-coupons-list"></tbody>
         </table>
+      </div>
+
+      <!-- Minha conta -->
+      <h3 class="section-label">Minha conta</h3>
+      <div class="form-panel">
+        <div><label for="conta-login">Novo login (deixe em branco para não mudar)</label><input type="text" id="conta-login" class="input-field" placeholder="admin" autocomplete="username"></div>
+        <div class="form-row">
+          <div><label for="conta-senha-nova">Nova senha (mín. 8 caracteres, deixe em branco para não mudar)</label><input type="password" id="conta-senha-nova" class="input-field" autocomplete="new-password"></div>
+          <div><label for="conta-senha-atual">Senha atual (obrigatória para confirmar)</label><input type="password" id="conta-senha-atual" class="input-field" autocomplete="current-password"></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn btn-primary" id="btn-salvar-conta">Salvar alterações</button>
+        </div>
+        <div id="conta-msg" class="hint" style="margin-top:8px;"></div>
       </div>
     </div>
   </section>

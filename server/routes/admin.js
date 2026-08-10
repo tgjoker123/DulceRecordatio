@@ -1,7 +1,8 @@
 import { Router } from 'express';
+import bcrypt from 'bcryptjs';
 import { sql } from '../db.js';
-import { exigirAdmin } from '../auth.js';
-import { dinheiro, erro400, inteiro, numero, rota, texto, textoOpcional } from '../utils.js';
+import { exigirAdmin, gerarHashSenha, limparCookieSessao } from '../auth.js';
+import { dinheiro, erro400, ErroHttp, inteiro, numero, rota, texto, textoOpcional } from '../utils.js';
 
 export const rotasAdmin = Router();
 
@@ -154,4 +155,36 @@ rotasAdmin.patch('/pedidos/:id/status', rota(async (req, res) => {
   `;
   if (!atualizado) return res.status(404).json({ erro: 'Pedido não encontrado.' });
   res.json(atualizado);
+}));
+
+/* ---------------------- Conta ---------------------- */
+
+rotasAdmin.put('/conta', rota(async (req, res) => {
+  const senhaAtual = texto(req.body?.senha_atual, 'senha atual', { max: 200 });
+  const novoLogin = req.body?.novo_login ? texto(req.body.novo_login, 'login', { min: 3, max: 160 }).toLowerCase() : null;
+  const novaSenha = req.body?.nova_senha ? texto(req.body.nova_senha, 'nova senha', { min: 8, max: 200 }) : null;
+
+  if (!novoLogin && !novaSenha) throw erro400('Informe um novo login ou uma nova senha.');
+
+  const [admin] = await sql`SELECT id, email, senha_hash FROM admins WHERE id = ${req.admin.sub}`;
+  if (!admin) throw new ErroHttp(401, 'Sessão inválida.');
+
+  const ok = await bcrypt.compare(senhaAtual, admin.senha_hash);
+  if (!ok) throw erro400('Senha atual incorreta.');
+
+  const loginMudou = novoLogin && novoLogin !== admin.email;
+  if (loginMudou) {
+    const [existente] = await sql`SELECT id FROM admins WHERE email = ${novoLogin} AND id != ${admin.id}`;
+    if (existente) throw erro400('Esse login já está em uso.');
+  }
+
+  const novoHash = novaSenha ? await gerarHashSenha(novaSenha) : admin.senha_hash;
+  await sql`UPDATE admins SET email = ${novoLogin || admin.email}, senha_hash = ${novoHash} WHERE id = ${admin.id}`;
+
+  // o cookie de sessão está atrelado ao login antigo: se ele mudou, força novo login
+  if (loginMudou) {
+    limparCookieSessao(res);
+    return res.json({ ok: true, relogar: true });
+  }
+  res.json({ ok: true });
 }));
