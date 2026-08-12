@@ -48,11 +48,11 @@ async function carregarResumo() {
   try {
     const r = await api.admin.resumo();
     $('#admin-stats').innerHTML = `
-      <div class="stat-card destaque"><div class="rotulo">Receita confirmada</div><div class="valor">${brl(r.receita)}</div></div>
-      <div class="stat-card"><div class="rotulo">Pedidos pagos</div><div class="valor">${r.pedidosPagos}</div></div>
-      <div class="stat-card"><div class="rotulo">Aguardando pagamento</div><div class="valor">${r.pedidosPendentes}</div></div>
-      <div class="stat-card ${r.produtosSemEstoque ? 'alerta' : ''}"><div class="rotulo">Sem estoque</div><div class="valor">${r.produtosSemEstoque}</div></div>
-      <div class="stat-card"><div class="rotulo">Produtos ativos</div><div class="valor">${r.produtosAtivos}</div></div>`;
+      <div class="stat-card destaque"><i class="fa-solid fa-sack-dollar"></i><div class="rotulo">Receita confirmada</div><div class="valor">${brl(r.receita)}</div></div>
+      <div class="stat-card"><i class="fa-solid fa-box-open"></i><div class="rotulo">Pedidos pagos</div><div class="valor">${r.pedidosPagos}</div></div>
+      <div class="stat-card"><i class="fa-solid fa-hourglass-half"></i><div class="rotulo">Aguardando pagamento</div><div class="valor">${r.pedidosPendentes}</div></div>
+      <div class="stat-card ${r.produtosSemEstoque ? 'alerta' : ''}"><i class="fa-solid fa-triangle-exclamation"></i><div class="rotulo">Sem estoque</div><div class="valor">${r.produtosSemEstoque}</div></div>
+      <div class="stat-card"><i class="fa-solid fa-store"></i><div class="rotulo">Produtos ativos</div><div class="valor">${r.produtosAtivos}</div></div>`;
   } catch (erro) {
     $('#admin-stats').innerHTML = `<div class="stat-card"><div class="rotulo">Resumo</div><div class="valor" style="font-size:.9rem;">${esc(erro.message)}</div></div>`;
   }

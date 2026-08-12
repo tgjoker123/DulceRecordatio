@@ -161,7 +161,8 @@
 
   <!-- ============ Login ============ -->
   <section id="page-auth" class="page">
-    <div class="admin-container" style="max-width:400px; text-align:center;">
+    <div class="admin-container" style="max-width:400px; text-align:center; padding:36px 30px;">
+      <div class="login-lock-icon"><i class="fa-solid fa-lock"></i></div>
       <h2>Acesso restrito</h2>
       <p style="font-size:.85rem; color:var(--muted); margin-top:8px;">Área exclusiva da equipe DulceRecordatio.</p>
       <form id="form-login" style="margin-top:20px; display:flex; flex-direction:column; gap:12px;">
@@ -177,17 +178,29 @@
   <section id="page-admin" class="page">
     <div class="admin-container">
       <div class="admin-header">
-        <h2>Painel administrativo</h2>
-        <div style="display:flex; gap:10px;">
-          <a href="#/" class="btn btn-ghost" style="flex:1;">Ver loja</a>
-          <button type="button" class="btn btn-danger" style="flex:1;" id="btn-sair">Sair</button>
+        <div class="admin-header-top">
+          <div>
+            <span class="eyebrow"><i class="fa-solid fa-sparkles"></i> Área da equipe</span>
+            <h2>Painel administrativo</h2>
+          </div>
+          <div class="admin-header-acoes">
+            <a href="#/" class="btn btn-ghost btn-sm"><i class="fa-solid fa-store"></i> Ver loja</a>
+            <button type="button" class="btn btn-danger btn-sm" id="btn-sair"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+          </div>
         </div>
+        <nav class="admin-nav">
+          <a href="#admin-sec-pedidos"><i class="fa-solid fa-receipt"></i> Pedidos</a>
+          <a href="#admin-sec-produtos"><i class="fa-solid fa-box-open"></i> Produtos</a>
+          <a href="#admin-sec-cupons"><i class="fa-solid fa-tag"></i> Cupons</a>
+          <a href="#admin-sec-conta"><i class="fa-solid fa-user-gear"></i> Minha conta</a>
+        </nav>
       </div>
 
+      <div class="admin-body">
       <div class="stats-grid" id="admin-stats"></div>
 
       <!-- Pedidos -->
-      <h3 class="section-label">Pedidos</h3>
+      <h3 class="section-label" id="admin-sec-pedidos"><i class="fa-solid fa-receipt"></i> Pedidos</h3>
       <div class="filtros" id="filtros-pedidos">
         <button type="button" class="filtro-btn active" data-status="">Todos</button>
         <button type="button" class="filtro-btn" data-status="aguardando_pagamento">Aguardando</button>
@@ -202,7 +215,7 @@
       </div>
 
       <!-- Produtos -->
-      <h3 class="section-label">Produtos</h3>
+      <h3 class="section-label" id="admin-sec-produtos"><i class="fa-solid fa-box-open"></i> Produtos</h3>
       <div class="form-panel">
         <input type="hidden" id="form-id">
         <div><label for="form-nome">Nome do produto</label><input type="text" id="form-nome" class="input-field" placeholder="Agenda Afetiva 2026"></div>
@@ -235,7 +248,7 @@
       </div>
 
       <!-- Cupons -->
-      <h3 class="section-label">Cupons</h3>
+      <h3 class="section-label" id="admin-sec-cupons"><i class="fa-solid fa-tag"></i> Cupons</h3>
       <div class="form-panel">
         <input type="hidden" id="coupon-id">
         <div class="form-row">
@@ -257,17 +270,19 @@
       </div>
 
       <!-- Minha conta -->
-      <h3 class="section-label">Minha conta</h3>
-      <div class="form-panel">
+      <h3 class="section-label" id="admin-sec-conta"><i class="fa-solid fa-user-gear"></i> Minha conta</h3>
+      <div class="form-panel form-panel-conta">
+        <p class="conta-intro"><i class="fa-solid fa-lock"></i> Troque seu login e senha sempre que quiser — precisa confirmar com a senha atual.</p>
         <div><label for="conta-login">Novo login (deixe em branco para não mudar)</label><input type="text" id="conta-login" class="input-field" placeholder="admin" autocomplete="username"></div>
         <div class="form-row">
           <div><label for="conta-senha-nova">Nova senha (mín. 8 caracteres, deixe em branco para não mudar)</label><input type="password" id="conta-senha-nova" class="input-field" autocomplete="new-password"></div>
           <div><label for="conta-senha-atual">Senha atual (obrigatória para confirmar)</label><input type="password" id="conta-senha-atual" class="input-field" autocomplete="current-password"></div>
         </div>
         <div style="display:flex; gap:10px;">
-          <button type="button" class="btn btn-primary" id="btn-salvar-conta">Salvar alterações</button>
+          <button type="button" class="btn btn-primary" id="btn-salvar-conta"><i class="fa-solid fa-floppy-disk"></i> Salvar alterações</button>
         </div>
         <div id="conta-msg" class="hint" style="margin-top:8px;"></div>
+      </div>
       </div>
     </div>
   </section>
